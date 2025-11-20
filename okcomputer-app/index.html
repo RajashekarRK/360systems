@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>360-Degree Software Solution - Comprehensive Feature Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/3.0.3/plotly.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #2563EB;
+            --color-secondary: #0891B2;
+            --color-success: #059669;
+            --color-warning: #D97706;
+            --color-error: #DC2626;
+            --color-text-primary: #1E293B;
+            --color-text-secondary: #475569;
+            --color-background: #FFFFFF;
+            --color-background-secondary: #F8FAFC;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--color-text-primary);
+            background: var(--color-background-secondary);
+        }
+        
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .hero-gradient {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .feature-icon {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-link {
+            transition: all 0.2s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--color-primary);
+            transform: translateX(4px);
+        }
+        
+        .section-divider {
+            background: linear-gradient(90deg, transparent 0%, var(--color-primary) 50%, transparent 100%);
+            height: 1px;
+        }
+        
+        .interactive-demo {
+            background: rgba(37, 99, 235, 0.05);
+            border: 1px solid rgba(37, 99, 235, 0.1);
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(37, 99, 235, 0.1);
+            z-index: 1000;
+        }
+        
+        .scroll-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+            transition: width 0.1s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Scroll Progress Indicator -->
+    <div class="scroll-indicator">
+        <div class="scroll-progress" id="scrollProgress"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-xl font-display font-bold text-gray-900">360° Solution</h1>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Overview</a>
+                        <a href="#features" class="nav-link text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Features</a>
+                        <a href="#architecture" class="nav-link text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Architecture</a>
+                        <a href="#demo" class="nav-link text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Demo</a>
+                        <a href="#documentation" class="nav-link text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Docs</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-600 hover:text-blue-600">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="md:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
+                <a href="#overview" class="nav-link block px-3 py-2 text-gray-600 hover:text-blue-600">Overview</a>
+                <a href="#features" class="nav-link block px-3 py-2 text-gray-600 hover:text-blue-600">Features</a>
+                <a href="#architecture" class="nav-link block px-3 py-2 text-gray-600 hover:text-blue-600">Architecture</a>
+                <a href="#demo" class="nav-link block px-3 py-2 text-gray-600 hover:text-blue-600">Demo</a>
+                <a href="#documentation" class="nav-link block px-3 py-2 text-gray-600 hover:text-blue-600">Docs</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-gradient pt-20 pb-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="text-white">
+                    <h1 class="text-4xl lg:text-6xl font-display font-bold mb-6">
+                        Comprehensive 360°
+                        <span class="block text-blue-200">Software Solution</span>
+                    </h1>
+                    <p class="text-xl lg:text-2xl mb-8 text-blue-100 leading-relaxed">
+                        Enterprise-grade feedback and performance management platform with dual dashboard interfaces, 
+                        advanced communication capabilities, and AI-powered analytics.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="demo-login.html" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-all duration-200 transform hover:scale-105">
+                            Explore Demo
+                        </a>
+                        <button onclick="scrollToSection('features')" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-200">
+                            View Features
+                        </button>
+                    </div>
+                </div>
+                <div class="relative">
+                    <img src="resources/dashboard-hero.png" alt="360-Degree Dashboard Interface" class="rounded-2xl shadow-2xl w-full">
+                    <div class="absolute -top-4 -right-4 bg-white rounded-full p-3 shadow-lg pulse-animation">
+                        <i class="fas fa-chart-line text-2xl feature-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Overview Section -->
+    <section id="overview" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl lg:text-4xl font-display font-bold text-gray-900 mb-4">
+                    Complete Enterprise Solution
+                </h2>
+                <div class="section-divider mb-8"></div>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Our comprehensive 360-degree feedback platform provides organizations with powerful tools 
+                    for employee development, performance management, and organizational growth.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+                <div class="card-hover bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-users text-blue-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Dual Dashboards</h3>
+                    <p class="text-gray-600">Separate interfaces for administrators and participants with role-specific features</p>
+                </div>
+                
+                <div class="card-hover bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                    <div class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-bell text-teal-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Smart Communication</h3>
+                    <p class="text-gray-600">Integrated email and WhatsApp reminder systems with automated workflows</p>
+                </div>
+                
+                <div class="card-hover bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-brain text-green-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">AI-Powered Analytics</h3>
+                    <p class="text-gray-600">Advanced insights with sentiment analysis, trend identification, and predictive modeling</p>
+                </div>
+                
+                <div class="card-hover bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-mobile-alt text-purple-600 text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Mobile-First</h3>
+                    <p class="text-gray-600">Responsive design with native mobile applications for seamless access</p>
+                </div>
+            </div>
+
+            <!-- Key Statistics -->
+            <div class="bg-gradient-to-r from-blue-50 to-teal-50 rounded-2xl p-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div>
+                        <div class="text-3xl font-bold text-blue-600 mb-2">90%</div>
+                        <div class="text-gray-600">Reduction in Admin Workload</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold text-teal-600 mb-2">91%</div>
+                        <div class="text-gray-600">Completion Rate Improvement</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold text-green-600 mb-2">100+</div>
+                        <div class="text-gray-600">Languages Supported</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Demo Access Section -->
+    <section class="py-20 bg-gradient-to-br from-blue-50 to-purple-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl lg:text-4xl font-display font-bold text-gray-900 mb-4">
+                    Experience Live Functionality
+                </h2>
+                <div class="section-divider mb-8"></div>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    All features are fully implemented and functional. Access the complete 360Pro platform 
+                    with real interactive dashboards, auto-suggestion, progress tracking, and CRUD operations.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <div class="card-hover bg-white p-8 rounded-xl shadow-lg border border-gray-100 text-center">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-crown text-red-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Admin Dashboard</h3>
+                    <p class="text-gray-600 mb-6">Full platform control with client management, competency dictionary, question bank, and comprehensive analytics.</p>
+                    <a href="comprehensive-admin.html" class="inline-flex items-center bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors font-medium">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Access Admin
+                    </a>
+                </div>
+                
+                <div class="card-hover bg-white p-8 rounded-xl shadow-lg border border-gray-100 text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-users text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Manager Dashboard</h3>
+                    <p class="text-gray-600 mb-6">Team leadership tools with performance tracking, development planning, and team analytics capabilities.</p>
+                    <a href="manager-dashboard.html" class="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Access Manager
+                    </a>
+                </div>
+                
+                <div class="card-hover bg-white p-8 rounded-xl shadow-lg border border-gray-100 text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-user text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Employee Dashboard</h3>
+                    <p class="text-gray-600 mb-6">Personal development with competency selection, question customization, progress tracking, and feedback requests.</p>
+                    <a href="functional-employee.html" class="inline-flex items-center bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Access Employee
+                    </a>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <a href="demo-login.html" class="inline-flex items-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-semibold text-lg shadow-lg">
+                    <i class="fas fa-rocket mr-3"></i>Start Interactive Demo
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl lg:text-4xl font-display font-bold text-gray-900 mb-4">
+                    Comprehensive Feature Set
+                </h2>
+                <div class="section-divider mb-8"></div>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Explore the extensive capabilities that make our platform the complete solution 
+                    for 360-degree feedback and performance management.
+                </p>
+            </div>
+
+            <!-- Feature Tabs -->
+            <div class="mb-12">
+                <div class="flex flex-wrap justify-center gap-4 mb-8">
+                    <button class="feature-tab active px-6 py-3 rounded-lg font-semibold transition-all duration-200" data-tab="admin">
+                        <i class="fas fa-cog mr-2"></i>Admin Dashboard
+                    </button>
+                    <button class="feature-tab px-6 py-3 rounded-lg font-semibold transition-all duration-200" data-tab="participant">
+                        <i class="fas fa-user mr-2"></i>Participant Dashboard
+                    </button>
+                    <button class="feature-tab px-6 py-3 rounded-lg font-semibold transition-all duration-200" data-tab="communication">
+                        <i class="fas fa-comments mr-2"></i>Communication Hub
+                    </button>
+                    <button class="feature-tab px-6 py-3 rounded-lg font-semibold transition-all duration-200" data-tab="analytics">
+                        <i class="fas fa-chart-bar mr-2"></i>Analytics & AI
+                    </button>
+                </div>
+
+                <!-- Admin Dashboard Features -->
+                <div id="admin-features" class="feature-content active">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        <div>
+                            <h3 class="text-2xl font-display font-bold text-gray-900 mb-6">Administrator Dashboard</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mt-1">
+                                        <i class="fas fa-users text-blue-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Comprehensive User Management</h4>
+                                        <p class="text-gray-600">Bulk import/export, role-based permissions, Active Directory integration</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-6 h-6 bg-teal-100 rounded-full flex items-center justify-center mt-1">
+                                        <i class="fas fa-cogs text-teal-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Feedback Cycle Management</h4>
+                                        <p class="text-gray-600">Create and manage multiple cycles, customizable templates, automated workflows</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-1">
+                                        <i class="fas fa-chart-line text-green-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Advanced Analytics</h4>
+                                        <p class="text-gray-600">Real-time insights, trend analysis, performance benchmarking</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mt-1">
+                                        <i class="fas fa-shield-alt text-purple-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Security & Compliance</h4>
+                                        <p class="text-gray-600">GDPR compliance, data encryption, audit logging, SSO integration</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <img src="resources/admin-interface.png" alt="Admin Dashboard Interface" class="rounded-xl shadow-lg w-full">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Participant Dashboard Features -->
+                <div id="participant-features" class="feature-content hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        <div class="relative">
+                            <img src="resources/participant-dashboard.png" alt="Participant Dashboard Interface" class="rounded-xl shadow-lg w-full">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-display font-bold text-gray-900 mb-6">Participant Dashboard</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mt-1">
+                                        <i class="fas fa-tachometer-alt text-blue-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Personal Dashboard</h4>
+                                        <p class="text-gray-600">Feedback overview, development tracking, goal management</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-6 h-6 bg-teal-100 rounded-full flex items-center justify-center mt-1">
+                                        <i class="fas fa-edit text-teal-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Easy Feedback Submission</h4>
+                                        <p class="text-gray-600">Smart forms, anonymous options, mobile-optimized interface</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-1">
+                                        <i class="fas fa-route text-green-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Development Planning</h4>
+                                        <p class="text-gray-600">Personal development plans, learning resources, career pathways</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mt-1">
+                                        <i class="fas fa-bell text-purple-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Smart Notifications</h4>
+                                        <p class="text-gray-600">Personalized alerts, deadline reminders, progress updates</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Communication Hub Features -->
+                <div id="communication-features" class="feature-content hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        <div>
+                            <h3 class="text-2xl font-display font-bold text-gray-900 mb-6">Communication Hub</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mt-1">
+                                        <i class="fas fa-envelope text-blue-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Email Integration</h4>
+                                        <p class="text-gray-600">Customizable templates, automated sequences, delivery tracking</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-6 h-6 bg-teal-100 rounded-full flex items-center justify-center mt-1">
+                                        <i class="fab fa-whatsapp text-teal-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">WhatsApp Business API</h4>
+                                        <p class="text-gray-600">Two-way messaging, rich media support, automated workflows</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-1">
+                                        <i class="fas fa-robot text-green-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Smart Automation</h4>
+                                        <p class="text-gray-600">Intelligent reminders, escalation protocols, personalized messaging</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mt-1">
+                                        <i class="fas fa-language text-purple-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Multi-language Support</h4>
+                                        <p class="text-gray-600">100+ languages, automatic translation, localized content</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <img src="resources/communication-hub.png" alt="Communication Hub Interface" class="rounded-xl shadow-lg w-full">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics & AI Features -->
+                <div id="analytics-features" class="feature-content hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        <div class="relative">
+                            <img src="resources/analytics-dashboard.png" alt="Analytics Dashboard Interface" class="rounded-xl shadow-lg w-full">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-display font-bold text-gray-900 mb-6">Analytics & AI</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mt-1">
+                                        <i class="fas fa-chart-area text-blue-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Advanced Analytics</h4>
+                                        <p class="text-gray-600">Real-time dashboards, trend analysis, predictive modeling</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-6 h-6 bg-teal-100 rounded-full flex items-center justify-center mt-1">
+                                        <i class="fas fa-brain text-teal-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">AI-Powered Insights</h4>
+                                        <p class="text-gray-600">Sentiment analysis, theme detection, automated recommendations</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-1">
+                                        <i class="fas fa-lightbulb text-green-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Intelligent Recommendations</h4>
+                                        <p class="text-gray-600">Personalized development paths, skill gap identification</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center mt-1">
+                                        <i class="fas fa-eye text-purple-600 text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Predictive Analytics</h4>
+                                        <p class="text-gray-600">Performance forecasting, talent identification, risk assessment</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section id="architecture" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl lg:text-4xl font-display font-bold text-gray-900 mb-4">
+                    System Architecture
+                </h2>
+                <div class="section-divider mb-8"></div>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Scalable, secure, and robust architecture designed for enterprise deployment 
+                    with cloud-native principles and microservices approach.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-xl">
+                    <div class="w-16 h-16 bg-blue-600 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-cloud text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Cloud-Native Design</h3>
+                    <ul class="space-y-2 text-gray-600">
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i>Multi-tenant SaaS platform</li>
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i>Auto-scaling capabilities</li>
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i>Distributed microservices</li>
+                        <li class="flex items-center"><i class="fas fa-check text-blue-600 mr-2"></i>API-first architecture</li>
+                    </ul>
+                </div>
+
+                <div class="bg-gradient-to-br from-teal-50 to-teal-100 p-8 rounded-xl">
+                    <div class="w-16 h-16 bg-teal-600 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-shield-alt text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Enterprise Security</h3>
+                    <ul class="space-y-2 text-gray-600">
+                        <li class="flex items-center"><i class="fas fa-check text-teal-600 mr-2"></i>SOC 2 Type II compliance</li>
+                        <li class="flex items-center"><i class="fas fa-check text-teal-600 mr-2"></i>End-to-end encryption</li>
+                        <li class="flex items-center"><i class="fas fa-check text-teal-600 mr-2"></i>SSO integration</li>
+                        <li class="flex items-center"><i class="fas fa-check text-teal-600 mr-2"></i>Regular security audits</li>
+                    </ul>
+                </div>
+
+                <div class="bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-xl">
+                    <div class="w-16 h-16 bg-green-600 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-database text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Data Management</h3>
+                    <ul class="space-y-2 text-gray-600">
+                        <li class="flex items-center"><i class="fas fa-check text-green-600 mr-2"></i>Real-time synchronization</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-600 mr-2"></i>Automated backups</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-600 mr-2"></i>GDPR compliance</li>
+                        <li class="flex items-center"><i class="fas fa-check text-green-600 mr-2"></i>Analytics warehouse</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Technology Stack -->
+            <div class="bg-gray-50 rounded-2xl p-8">
+                <h3 class="text-2xl font-display font-bold text-gray-900 mb-8 text-center">Technology Stack</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                            <i class="fab fa-react text-white text-2xl"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-900 mb-2">Frontend</h4>
+                        <p class="text-gray-600 text-sm">React, Vue.js, TypeScript</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-server text-white text-2xl"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-900 mb-2">Backend</h4>
+                        <p class="text-gray-600 text-sm">Node.js, Python, Microservices</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-database text-white text-2xl"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-900 mb-2">Database</h4>
+                        <p class="text-gray-600 text-sm">PostgreSQL, MongoDB, Redis</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-cloud text-white text-2xl"></i>
+                        </div>
+                        <h4 class="font-semibold text-gray-900 mb-2">Infrastructure</h4>
+                        <p class="text-gray-600 text-sm">AWS, Azure, Kubernetes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demo Section -->
+    <section id="demo" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl lg:text-4xl font-display font-bold text-gray-900 mb-4">
+                    Interactive Demo
+                </h2>
+                <div class="section-divider mb-8"></div>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Experience the power of our 360-degree feedback platform with interactive demonstrations 
+                    of key features and capabilities.
+                </p>
+            </div>
+
+            <!-- Demo Controls -->
+            <div class="flex flex-wrap justify-center gap-4 mb-12">
+                <button class="demo-btn active px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold transition-all duration-200" data-demo="analytics">
+                    <i class="fas fa-chart-bar mr-2"></i>Analytics Dashboard
+                </button>
+                <button class="demo-btn px-6 py-3 bg-white text-gray-600 border border-gray-300 rounded-lg font-semibold transition-all duration-200 hover:bg-gray-50" data-demo="feedback">
+                    <i class="fas fa-comments mr-2"></i>Feedback System
+                </button>
+                <button class="demo-btn px-6 py-3 bg-white text-gray-600 border border-gray-300 rounded-lg font-semibold transition-all duration-200 hover:bg-gray-50" data-demo="mobile">
+                    <i class="fas fa-mobile-alt mr-2"></i>Mobile Experience
+                </button>
+            </div>
+
+            <!-- Analytics Demo -->
+            <div id="analytics-demo" class="demo-content">
+                <div class="bg-white rounded-2xl shadow-lg p-8">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">Real-time Analytics Dashboard</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <div id="participation-chart" class="w-full h-64"></div>
+                        </div>
+                        <div>
+                            <div id="performance-metrics" class="w-full h-64"></div>
+                        </div>
+                    </div>
+                    <div class="mt-8">
+                        <div id="feedback-trends" class="w-full h-80"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback System Demo -->
+            <div id="feedback-demo" class="demo-content hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-8">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">360-Degree Feedback Interface</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2">
+                            <div class="bg-gray-50 rounded-lg p-6">
+                                <h4 class="font-semibold text-gray-900 mb-4">Feedback Submission Form</h4>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Communication Skills</label>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-sm text-gray-500">Poor</span>
+                                            <input type="range" min="1" max="5" value="4" class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                            <span class="text-sm text-gray-500">Excellent</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Leadership Potential</label>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-sm text-gray-500">Low</span>
+                                            <input type="range" min="1" max="5" value="3" class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                            <span class="text-sm text-gray-500">High</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Additional Comments</label>
+                                        <textarea class="w-full p-3 border border-gray-300 rounded-lg" rows="3" placeholder="Provide constructive feedback..."></textarea>
+                                    </div>
+                                    <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                        Submit Feedback
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-blue-50 rounded-lg p-6">
+                                <h4 class="font-semibold text-gray-900 mb-4">Progress Overview</h4>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Completed</span>
+                                        <span class="text-sm font-semibold text-blue-600">8/10</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-600 h-2 rounded-full" style="width: 80%"></div>
+                                    </div>
+                                    <div class="text-xs text-gray-500">
+                                        2 pending feedback requests
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Demo -->
+            <div id="mobile-demo" class="demo-content hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-8">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">Mobile Experience</h3>
+                    <div class="flex justify-center">
+                        <div class="relative">
+                            <img src="resources/mobile-interface.png" alt="Mobile Interface" class="w-64 h-auto rounded-2xl shadow-2xl">
+                            <div class="absolute -top-2 -right-2 bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-xs font-bold">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="text-center">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-touch text-blue-600 text-xl"></i>
+                            </div>
+                            <h4 class="font-semibold text-gray-900 mb-2">Touch Optimized</h4>
+                            <p class="text-gray-600 text-sm">Gesture support and optimized touch targets</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-wifi-slash text-teal-600 text-xl"></i>
+                            </div>
+                            <h4 class="font-semibold text-gray-900 mb-2">Offline Capable</h4>
+                            <p class="text-gray-600 text-sm">Work offline with automatic sync</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                                <i class="fas fa-bell text-green-600 text-xl"></i>
+                            </div>
+                            <h4 class="font-semibold text-gray-900 mb-2">Smart Notifications</h4>
+                            <p class="text-gray-600 text-sm">Push notifications and reminders</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Documentation Section -->
+    <section id="documentation" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl lg:text-4xl font-display font-bold text-gray-900 mb-4">
+                    Documentation & Resources
+                </h2>
+                <div class="section-divider mb-8"></div>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Access comprehensive documentation, implementation guides, and technical resources 
+                    to successfully deploy and manage the 360-degree software solution.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Technical Documentation -->
+                <div class="space-y-8">
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8">
+                        <div class="flex items-center mb-6">
+                            <div class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-file-alt text-white text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900">Technical Documentation</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <a href="feature-specification.md" class="block bg-white rounded-lg p-4 hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Feature Specification</h4>
+                                        <p class="text-gray-600 text-sm">Comprehensive feature documentation</p>
+                                    </div>
+                                    <i class="fas fa-download text-blue-600"></i>
+                                </div>
+                            </a>
+                            <a href="interaction.md" class="block bg-white rounded-lg p-4 hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Interaction Design</h4>
+                                        <p class="text-gray-600 text-sm">User interaction flows and patterns</p>
+                                    </div>
+                                    <i class="fas fa-download text-blue-600"></i>
+                                </div>
+                            </a>
+                            <a href="design.md" class="block bg-white rounded-lg p-4 hover:shadow-md transition-shadow">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">Design System</h4>
+                                        <p class="text-gray-600 text-sm">Visual design guidelines and components</p>
+                                    </div>
+                                    <i class="fas fa-download text-blue-600"></i>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl p-8">
+                        <div class="flex items-center mb-6">
+                            <div class="w-12 h-12 bg-teal-600 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-cogs text-white text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900">Implementation Guides</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="bg-white rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-900 mb-2">Quick Start Guide</h4>
+                                <p class="text-gray-600 text-sm mb-3">Get started with basic setup and configuration</p>
+                                <button class="text-teal-600 font-semibold text-sm hover:text-teal-700">Read Guide →</button>
+                            </div>
+                            <div class="bg-white rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-900 mb-2">Integration Manual</h4>
+                                <p class="text-gray-600 text-sm mb-3">Connect with existing HRIS and enterprise systems</p>
+                                <button class="text-teal-600 font-semibold text-sm hover:text-teal-700">Read Manual →</button>
+                            </div>
+                            <div class="bg-white rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-900 mb-2">Best Practices</h4>
+                                <p class="text-gray-600 text-sm mb-3">Implementation strategies and optimization tips</p>
+                                <button class="text-teal-600 font-semibold text-sm hover:text-teal-700">Read Guide →</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API & Developer Resources -->
+                <div class="space-y-8">
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-8">
+                        <div class="flex items-center mb-6">
+                            <div class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-code text-white text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900">Developer Resources</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="bg-white rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-900 mb-2">API Documentation</h4>
+                                <p class="text-gray-600 text-sm mb-3">RESTful API reference and examples</p>
+                                <button class="text-green-600 font-semibold text-sm hover:text-green-700">Explore API →</button>
+                            </div>
+                            <div class="bg-white rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-900 mb-2">SDK Libraries</h4>
+                                <p class="text-gray-600 text-sm mb-3">Client libraries for popular programming languages</p>
+                                <button class="text-green-600 font-semibold text-sm hover:text-green-700">View SDKs →</button>
+                            </div>
+                            <div class="bg-white rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-900 mb-2">Webhooks</h4>
+                                <p class="text-gray-600 text-sm mb-3">Real-time event notifications and integrations</p>
+                                <button class="text-green-600 font-semibold text-sm hover:text-green-700">Setup Webhooks →</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-8">
+                        <div class="flex items-center mb-6">
+                            <div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-graduation-cap text-white text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900">Training & Support</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="bg-white rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-900 mb-2">Video Tutorials</h4>
+                                <p class="text-gray-600 text-sm mb-3">Step-by-step video guides for all features</p>
+                                <button class="text-purple-600 font-semibold text-sm hover:text-purple-700">Watch Videos →</button>
+                            </div>
+                            <div class="bg-white rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-900 mb-2">Live Training</h4>
+                                <p class="text-gray-600 text-sm mb-3">Scheduled webinars and training sessions</p>
+                                <button class="text-purple-600 font-semibold text-sm hover:text-purple-700">Join Training →</button>
+                            </div>
+                            <div class="bg-white rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-900 mb-2">Support Center</h4>
+                                <p class="text-gray-600 text-sm mb-3">24/7 technical support and help desk</p>
+                                <button class="text-purple-600 font-semibold text-sm hover:text-purple-700">Get Support →</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="py-20 bg-gradient-to-br from-blue-600 to-teal-600">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl lg:text-4xl font-display font-bold text-white mb-6">
+                Ready to Transform Your Organization?
+            </h2>
+            <p class="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+                Get started with the most comprehensive 360-degree feedback solution. 
+                Schedule a demo or start your free trial today.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="demo-login.html" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-all duration-200 transform hover:scale-105">
+                    Explore Demo
+                </a>
+                <button class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-200">
+                    Start Free Trial
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h3 class="text-2xl font-display font-bold mb-4">360° Software Solution</h3>
+                <p class="text-gray-400 mb-6">Comprehensive feedback and performance management platform</p>
+                <div class="flex justify-center space-x-6 mb-8">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-linkedin text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-twitter text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fab fa-github text-xl"></i>
+                    </a>
+                </div>
+                <div class="border-t border-gray-800 pt-8">
+                    <p class="text-gray-400 text-sm">
+                        © 2024 360° Software Solution. All rights reserved.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Scroll progress indicator
+        window.addEventListener('scroll', () => {
+            const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+            document.getElementById('scrollProgress').style.width = scrolled + '%';
+        });
+
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', () => {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Smooth scroll to section
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Feature tab switching
+        document.querySelectorAll('.feature-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs
+                document.querySelectorAll('.feature-tab').forEach(t => {
+                    t.classList.remove('active', 'bg-blue-600', 'text-white');
+                    t.classList.add('bg-white', 'text-gray-600', 'border', 'border-gray-300');
+                });
+                
+                // Add active class to clicked tab
+                tab.classList.remove('bg-white', 'text-gray-600', 'border', 'border-gray-300');
+                tab.classList.add('active', 'bg-blue-600', 'text-white');
+                
+                // Hide all feature content
+                document.querySelectorAll('.feature-content').forEach(content => {
+                    content.classList.add('hidden');
+                    content.classList.remove('active');
+                });
+                
+                // Show selected feature content
+                const targetContent = document.getElementById(tab.dataset.tab + '-features');
+                if (targetContent) {
+                    targetContent.classList.remove('hidden');
+                    targetContent.classList.add('active');
+                }
+            });
+        });
+
+        // Demo switching
+        document.querySelectorAll('.demo-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all demo buttons
+                document.querySelectorAll('.demo-btn').forEach(b => {
+                    b.classList.remove('active', 'bg-blue-600', 'text-white');
+                    b.classList.add('bg-white', 'text-gray-600', 'border', 'border-gray-300');
+                });
+                
+                // Add active class to clicked button
+                btn.classList.remove('bg-white', 'text-gray-600', 'border', 'border-gray-300');
+                btn.classList.add('active', 'bg-blue-600', 'text-white');
+                
+                // Hide all demo content
+                document.querySelectorAll('.demo-content').forEach(content => {
+                    content.classList.add('hidden');
+                });
+                
+                // Show selected demo content
+                const targetDemo = document.getElementById(btn.dataset.demo + '-demo');
+                if (targetDemo) {
+                    targetDemo.classList.remove('hidden');
+                }
+            });
+        });
+
+        // Initialize charts when analytics demo is shown
+        function initializeCharts() {
+            // Participation Chart
+            const participationData = [{
+                x: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                y: [65, 78, 85, 91],
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: { color: '#2563EB', width: 3 },
+                marker: { color: '#2563EB', size: 8 }
+            }];
+            
+            Plotly.newPlot('participation-chart', participationData, {
+                title: 'Participation Rate Over Time',
+                xaxis: { title: 'Time Period' },
+                yaxis: { title: 'Participation %' },
+                margin: { t: 40, r: 20, b: 40, l: 40 }
+            }, { displayModeBar: false, responsive: true });
+
+            // Performance Metrics
+            const performanceData = [{
+                values: [35, 25, 20, 15, 5],
+                labels: ['Excellent', 'Good', 'Average', 'Below Average', 'Poor'],
+                type: 'pie',
+                marker: {
+                    colors: ['#059669', '#0891B2', '#2563EB', '#D97706', '#DC2626']
+                }
+            }];
+            
+            Plotly.newPlot('performance-metrics', performanceData, {
+                title: 'Overall Performance Distribution',
+                margin: { t: 40, r: 20, b: 20, l: 20 }
+            }, { displayModeBar: false, responsive: true });
+
+            // Feedback Trends
+            const trendsData = [
+                {
+                    x: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    y: [3.2, 3.5, 3.8, 4.1],
+                    name: 'Communication',
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    line: { color: '#2563EB' }
+                },
+                {
+                    x: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    y: [3.0, 3.3, 3.6, 3.9],
+                    name: 'Leadership',
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    line: { color: '#0891B2' }
+                },
+                {
+                    x: ['Q1', 'Q2', 'Q3', 'Q4'],
+                    y: [3.4, 3.7, 4.0, 4.3],
+                    name: 'Teamwork',
+                    type: 'scatter',
+                    mode: 'lines+markers',
+                    line: { color: '#059669' }
+                }
+            ];
+            
+            Plotly.newPlot('feedback-trends', trendsData, {
+                title: 'Feedback Trends by Category',
+                xaxis: { title: 'Quarter' },
+                yaxis: { title: 'Average Rating' },
+                margin: { t: 40, r: 20, b: 40, l: 40 }
+            }, { displayModeBar: false, responsive: true });
+        }
+
+        // Initialize charts when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize charts after a short delay to ensure Plotly is loaded
+            setTimeout(initializeCharts, 500);
+        });
+
+        // Add smooth scrolling to navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

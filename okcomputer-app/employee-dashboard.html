@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Dashboard - 360° Software Solution</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/3.0.3/plotly.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #2563EB;
+            --color-secondary: #0891B2;
+            --color-success: #059669;
+            --color-warning: #D97706;
+            --color-error: #DC2626;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #F8FAFC;
+        }
+        
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .sidebar {
+            background: linear-gradient(180deg, var(--color-success) 0%, var(--color-warning) 100%);
+        }
+        
+        .nav-item {
+            transition: all 0.2s ease;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid white;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.35s;
+            transform-origin: 50% 50%;
+        }
+        
+        .feedback-card {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(8, 145, 178, 0.05) 100%);
+        }
+        
+        .achievement-badge {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #8B4513;
+        }
+    </style>
+</head>
+<body class="flex h-screen">
+    <!-- Sidebar -->
+    <div class="sidebar w-64 text-white flex flex-col">
+        <div class="p-6">
+            <h1 class="text-xl font-display font-bold">360° Solution</h1>
+            <p class="text-green-200 text-sm">Employee Dashboard</p>
+        </div>
+        
+        <nav class="flex-1 px-4">
+            <div class="space-y-2">
+                <a href="#" class="nav-item active flex items-center px-4 py-3 rounded-lg" onclick="showSection('dashboard')">
+                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="#" class="nav-item flex items-center px-4 py-3 rounded-lg" onclick="showSection('feedback')">
+                    <i class="fas fa-comments mr-3"></i>
+                    My Feedback
+                </a>
+                <a href="#" class="nav-item flex items-center px-4 py-3 rounded-lg" onclick="showSection('development')">
+                    <i class="fas fa-route mr-3"></i>
+                    My Development
+                </a>
+                <a href="#" class="nav-item flex items-center px-4 py-3 rounded-lg" onclick="showSection('goals')">
+                    <i class="fas fa-bullseye mr-3"></i>
+                    Goals & OKRs
+                </a>
+                <a href="#" class="nav-item flex items-center px-4 py-3 rounded-lg" onclick="showSection('team')">
+                    <i class="fas fa-users mr-3"></i>
+                    My Team
+                </a>
+                <a href="#" class="nav-item flex items-center px-4 py-3 rounded-lg" onclick="showSection('calendar')">
+                    <i class="fas fa-calendar mr-3"></i>
+                    Calendar
+                </a>
+            </div>
+        </nav>
+        
+        <div class="p-4 border-t border-green-400">
+            <div class="flex items-center">
+                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center mr-3">
+                    <i class="fas fa-user text-green-600 text-sm"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold">Mike Johnson</p>
+                    <p class="text-green-200 text-xs">Senior Developer</p>
+                </div>
+            </div>
+            <button onclick="logout()" class="w-full mt-3 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg text-sm transition-colors">
+                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 id="page-title" class="text-2xl font-display font-bold text-gray-900">Welcome back, Mike!</h2>
+                        <p id="page-subtitle" class="text-gray-600">Here's your progress and upcoming activities</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button onclick="showNotifications()" class="relative p-2 text-gray-600 hover:text-green-600 transition-colors">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">4</span>
+                        </button>
+                        <button onclick="showHelp()" class="p-2 text-gray-600 hover:text-green-600 transition-colors">
+                            <i class="fas fa-question-circle text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <main class="flex-1 overflow-y-auto p-6">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section-content">
+                <!-- Personal Overview Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="card-hover bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm">My Performance Score</p>
+                                <p class="text-3xl font-bold text-green-600">4.3</p>
+                                <p class="text-green-600 text-xs">↑ +0.2 from last cycle</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-star text-green-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-hover bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm">Pending Feedback</p>
+                                <p class="text-3xl font-bold text-orange-600">3</p>
+                                <p class="text-orange-600 text-xs">Need your input</p>
+                            </div>
+                            <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-clock text-orange-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-hover bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm">Goals Progress</p>
+                                <p class="text-3xl font-bold text-blue-600">78%</p>
+                                <p class="text-blue-600 text-xs">On track for Q1</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-bullseye text-blue-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-hover bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm">Achievements</p>
+                                <p class="text-3xl font-bold text-purple-600">12</p>
+                                <p class="text-purple-600 text-xs">This quarter</p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-trophy text-purple-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <button onclick="provideFeedback()" class="bg-green-600 text-white p-4 rounded-lg hover:bg-green-700 transition-colors text-center">
+                            <i class="fas fa-comment text-2xl mb-2"></i>
+                            <div class="font-semibold">Give Feedback</div>
+                            <div class="text-sm opacity-90">Help colleagues grow</div>
+                        </button>
+                        <button onclick="requestFeedback()" class="bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
+                            <i class="fas fa-comments text-2xl mb-2"></i>
+                            <div class="font-semibold">Request Feedback</div>
+                            <div class="text-sm opacity-90">Get insights on your work</div>
+                        </button>
+                        <button onclick="updateGoals()" class="bg-purple-600 text-white p-4 rounded-lg hover:bg-purple-700 transition-colors text-center">
+                            <i class="fas fa-edit text-2xl mb-2"></i>
+                            <div class="font-semibold">Update Goals</div>
+                            <div class="text-sm opacity-90">Track your progress</div>
+                        </button>
+                        <button onclick="viewAchievements()" class="bg-orange-600 text-white p-4 rounded-lg hover:bg-orange-700 transition-colors text-center">
+                            <i class="fas fa-trophy text-2xl mb-2"></i>
+                            <div class="font-semibold">My Achievements</div>
+                            <div class="text-sm opacity-90">See your recognition</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Performance Overview -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Performance Trend</h3>
+                        <div id="performance-trend-chart" class="w-full h-64"></div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Skills Assessment</h3>
+                        <div id="skills-assessment-chart" class="w-full h-64"></div>
+                    </div>
+                </div>
+
+                <!-- Recent Feedback & Achievements -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Feedback</h3>
+                        <div class="space-y-4">
+                            <div class="feedback-card rounded-lg p-4 border border-blue-200">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <span class="text-blue-600 font-semibold text-sm">EW</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <h4 class="font-semibold text-gray-900">Emily Wilson</h4>
+                                            <span class="text-xs text-gray-500">2 days ago</span>
+                                        </div>
+                                        <p class="text-gray-600 text-sm mb-2">"Mike's technical expertise and problem-solving skills are exceptional. He's a great team player and always willing to help others."</p>
+                                        <div class="flex items-center space-x-2">
+                                            <div class="flex text-yellow-400">
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                            </div>
+                                            <span class="text-xs text-gray-500">Technical Skills: 5.0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="feedback-card rounded-lg p-4 border border-green-200">
+                                <div class="flex items-start space-x-3">
+                                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                        <span class="text-green-600 font-semibold text-sm">SJ</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <h4 class="font-semibold text-gray-900">Sarah Johnson</h4>
+                                            <span class="text-xs text-gray-500">1 week ago</span>
+                                        </div>
+                                        <p class="text-gray-600 text-sm mb-2">"Excellent communication and leadership potential. Mike consistently delivers high-quality work and inspires the team."</p>
+                                        <div class="flex items-center space-x-2">
+                                            <div class="flex text-yellow-400">
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="fas fa-star text-xs"></i>
+                                                <i class="far fa-star text-xs"></i>
+                                            </div>
+                                            <span class="text-xs text-gray-500">Leadership: 4.0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Achievements</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
+                                <div class="achievement-badge w-12 h-12 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-trophy text-lg"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-semibold text-gray-900">Top Performer</h4>
+                                    <p class="text-gray-600 text-sm">Recognized as top performer in Q4 2023</p>
+                                    <span class="text-xs text-gray-500">March 1, 2024</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-lightbulb text-blue-600 text-lg"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-semibold text-gray-900">Innovation Award</h4>
+                                    <p class="text-gray-600 text-sm">Outstanding contribution to system optimization</p>
+                                    <span class="text-xs text-gray-500">February 15, 2024</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-4 p-3 bg-green-50 rounded-lg border border-green-200">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-users text-green-600 text-lg"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-semibold text-gray-900">Team Player</h4>
+                                    <p class="text-gray-600 text-sm">Exceptional collaboration on cross-team project</p>
+                                    <span class="text-xs text-gray-500">January 28, 2024</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback Section -->
+            <div id="feedback-section" class="section-content hidden">
+                <div class="space-y-6">
+                    <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900">My Feedback</h3>
+                            <div class="flex space-x-3">
+                                <button onclick="provideFeedback()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                    <i class="fas fa-plus mr-2"></i>Give Feedback
+                                </button>
+                                <button onclick="requestFeedback()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                    <i class="fas fa-comments mr-2"></i>Request Feedback
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Pending Requests -->
+                        <div class="mb-8">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">Pending Feedback Requests (3)</h4>
+                            <div class="space-y-4">
+                                <div class="border border-orange-200 rounded-lg p-4 bg-orange-50">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h5 class="font-semibold text-gray-900">Provide feedback for Emily Wilson</h5>
+                                            <p class="text-gray-600 text-sm">UX Design Project - Due in 3 days</p>
+                                            <div class="text-xs text-gray-500 mt-1">Requested by: Sarah Johnson</div>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button onclick="startFeedback('emily')" class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors">
+                                                Start Feedback
+                                            </button>
+                                            <button onclick="declineFeedback('emily')" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                                                Decline
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-blue-200 rounded-lg p-4 bg-blue-50">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h5 class="font-semibold text-gray-900">360° Feedback for Alex Chen</h5>
+                                            <p class="text-gray-600 text-sm">Team Collaboration Assessment - Due in 5 days</p>
+                                            <div class="text-xs text-gray-500 mt-1">Anonymous feedback cycle</div>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button onclick="startFeedback('alex')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                                Start Feedback
+                                            </button>
+                                            <button onclick="remindLater('alex')" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                                                Remind Later
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-red-200 rounded-lg p-4 bg-red-50">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h5 class="font-semibold text-gray-900">Overdue: Feedback for David Martinez</h5>
+                                            <p class="text-gray-600 text-sm">Project Management Skills - 2 days overdue</p>
+                                            <div class="text-xs text-gray-500 mt-1">Urgent: Please complete immediately</div>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button onclick="urgentFeedback('david')" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                                Complete Now
+                                            </button>
+                                            <button onclick="requestExtension('david')" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                                                Request Extension
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Feedback History -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">Feedback History</h4>
+                            <div class="space-y-4">
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex items-start space-x-4">
+                                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-check text-green-600"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <h5 class="font-semibold text-gray-900">Feedback for Lisa Wang</h5>
+                                                <span class="text-xs text-gray-500">Completed 2 days ago</span>
+                                            </div>
+                                            <p class="text-gray-600 text-sm mb-2">Communication Skills Assessment - Marketing Team</p>
+                                            <div class="flex items-center space-x-4">
+                                                <span class="text-sm text-gray-600">Overall Rating: <strong>4.2/5.0</strong></span>
+                                                <button onclick="viewFeedback('lisa')" class="text-blue-600 hover:text-blue-800 text-sm">
+                                                    View Details
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex items-start space-x-4">
+                                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-comments text-blue-600"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <h5 class="font-semibold text-gray-900">360° Feedback Cycle Q1</h5>
+                                                <span class="text-xs text-gray-500">Completed 1 week ago</span>
+                                            </div>
+                                            <p class="text-gray-600 text-sm mb-2">Comprehensive feedback from peers, managers, and direct reports</p>
+                                            <div class="flex items-center space-x-4">
+                                                <span class="text-sm text-gray-600">Participation: <strong>8/8 completed</strong></span>
+                                                <button onclick="viewFeedback('q1-cycle')" class="text-blue-600 hover:text-blue-800 text-sm">
+                                                    View Report
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Development Section -->
+            <div id="development-section" class="section-content hidden">
+                <div class="space-y-6">
+                    <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900">My Development Plan</h3>
+                            <button onclick="updateProgress()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                <i class="fas fa-sync-alt mr-2"></i>Update Progress
+                            </button>
+                        </div>
+
+                        <!-- Current Development Plan -->
+                        <div class="mb-8">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">Leadership Development Track</h4>
+                            <div class="bg-gradient-to-r from-blue-50 to-teal-50 rounded-lg p-6 mb-4">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div>
+                                        <h5 class="font-semibold text-gray-900">Overall Progress</h5>
+                                        <p class="text-gray-600 text-sm">Preparing for senior leadership role</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-2xl font-bold text-teal-600">75%</div>
+                                        <div class="text-sm text-gray-600">Complete</div>
+                                    </div>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3">
+                                    <div class="bg-gradient-to-r from-teal-500 to-blue-500 h-3 rounded-full" style="width: 75%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Development Activities -->
+                            <div class="space-y-4">
+                                <div class="border border-green-200 rounded-lg p-4 bg-green-50">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h5 class="font-semibold text-gray-900">Leadership Training Course</h5>
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Completed</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm mb-3">Advanced leadership principles and team management</p>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Completed: March 10, 2024</span>
+                                        <div class="flex text-yellow-400">
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                            <i class="fas fa-star text-sm"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-blue-200 rounded-lg p-4 bg-blue-50">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h5 class="font-semibold text-gray-900">Project Management Certification</h5>
+                                        <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs">In Progress</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm mb-3">PMP certification preparation and exam</p>
+                                    <div class="mb-3">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="text-sm text-gray-600">Progress</span>
+                                            <span class="text-sm font-semibold text-blue-600">60%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-blue-600 h-2 rounded-full" style="width: 60%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Due: April 15, 2024</span>
+                                        <button onclick="updateActivity('pmp')" class="text-blue-600 hover:text-blue-800 text-sm">
+                                            Update Progress
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-purple-200 rounded-lg p-4 bg-purple-50">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h5 class="font-semibold text-gray-900">Public Speaking Workshop</h5>
+                                        <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">Upcoming</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm mb-3">Advanced presentation and communication skills</p>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Scheduled: March 25-26, 2024</span>
+                                        <button onclick="prepareWorkshop('speaking')" class="text-purple-600 hover:text-purple-800 text-sm">
+                                            Prepare
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h5 class="font-semibold text-gray-900">Mentorship Program</h5>
+                                        <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs">Not Started</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm mb-3">One-on-one mentoring with senior leadership</p>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Start: April 1, 2024</span>
+                                        <button onclick="findMentor()" class="text-gray-600 hover:text-gray-800 text-sm">
+                                            Find Mentor
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Learning Resources -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">Recommended Learning Resources</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-book text-blue-600"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h5 class="font-semibold text-gray-900 mb-1">"The 7 Habits of Highly Effective People"</h5>
+                                            <p class="text-gray-600 text-sm mb-2">By Stephen Covey</p>
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-xs text-gray-500">Book • 432 pages</span>
+                                                <button onclick="addToLibrary('7-habits')" class="text-blue-600 hover:text-blue-800 text-xs">
+                                                    Add to Library
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-video text-green-600"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h5 class="font-semibold text-gray-900 mb-1">Leadership in the Digital Age</h5>
+                                            <p class="text-gray-600 text-sm mb-2">Online Course • Harvard Business School</p>
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-xs text-gray-500">6 weeks • Certificate</span>
+                                                <button onclick="enrollCourse('leadership-digital')" class="text-green-600 hover:text-green-800 text-xs">
+                                                    Enroll
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-microphone text-purple-600"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h5 class="font-semibold text-gray-900 mb-1">TED Talks: Leadership Collection</h5>
+                                            <p class="text-gray-600 text-sm mb-2">Curated leadership talks</p>
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-xs text-gray-500">15 videos • 3 hours</span>
+                                                <button onclick="watchTalks('ted-leadership')" class="text-purple-600 hover:text-purple-800 text-xs">
+                                                    Watch
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-users text-orange-600"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h5 class="font-semibold text-gray-900 mb-1">Leadership Networking Group</h5>
+                                            <p class="text-gray-600 text-sm mb-2">Monthly virtual meetups</p>
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-xs text-gray-500">Next: March 28, 2024</span>
+                                                <button onclick="joinGroup('leadership-network')" class="text-orange-600 hover:text-orange-800 text-xs">
+                                                    Join Group
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Goals Section -->
+            <div id="goals-section" class="section-content hidden">
+                <div class="space-y-6">
+                    <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900">Goals & OKRs</h3>
+                            <button onclick="createGoal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-plus mr-2"></i>Create Goal
+                            </button>
+                        </div>
+
+                        <!-- Current Quarter Goals -->
+                        <div class="mb-8">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">Q1 2024 Goals</h4>
+                            <div class="space-y-4">
+                                <div class="border border-blue-200 rounded-lg p-4 bg-blue-50">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div>
+                                            <h5 class="font-semibold text-gray-900">Improve System Performance</h5>
+                                            <p class="text-gray-600 text-sm">Reduce API response time by 30%</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-lg font-bold text-blue-600">78%</div>
+                                            <div class="text-xs text-gray-600">Complete</div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-blue-600 h-2 rounded-full" style="width: 78%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                        <div>
+                                            <span class="text-gray-600">Target:</span>
+                                            <span class="font-semibold">30% improvement</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-600">Current:</span>
+                                            <span class="font-semibold">23% improvement</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-600">Due:</span>
+                                            <span class="font-semibold">March 31, 2024</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3 flex space-x-2">
+                                        <button onclick="updateGoal('performance')" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors">
+                                            Update Progress
+                                        </button>
+                                        <button onclick="viewDetails('performance')" class="bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-300 transition-colors">
+                                            View Details
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-green-200 rounded-lg p-4 bg-green-50">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div>
+                                            <h5 class="font-semibold text-gray-900">Complete Leadership Training</h5>
+                                            <p class="text-gray-600 text-sm">Finish advanced leadership course</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-lg font-bold text-green-600">100%</div>
+                                            <div class="text-xs text-gray-600">Complete</div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-green-600 h-2 rounded-full" style="width: 100%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                        <div>
+                                            <span class="text-gray-600">Completed:</span>
+                                            <span class="font-semibold">March 10, 2024</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-600">Grade:</span>
+                                            <span class="font-semibold">A+</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-600">Certificate:</span>
+                                            <span class="font-semibold">Earned</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3 flex space-x-2">
+                                        <button onclick="viewCertificate('leadership')" class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 transition-colors">
+                                            View Certificate
+                                        </button>
+                                        <button onclick="shareAchievement('leadership')" class="bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-300 transition-colors">
+                                            Share
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-purple-200 rounded-lg p-4 bg-purple-50">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div>
+                                            <h5 class="font-semibold text-gray-900">Mentor Junior Developers</h5>
+                                            <p class="text-gray-600 text-sm">Guide 2 new team members</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-lg font-bold text-purple-600">45%</div>
+                                            <div class="text-xs text-gray-600">Complete</div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-purple-600 h-2 rounded-full" style="width: 45%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                        <div>
+                                            <span class="text-gray-600">Mentoring:</span>
+                                            <span class="font-semibold">2 developers</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-600">Sessions:</span>
+                                            <span class="font-semibold">6 completed</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-600">Due:</span>
+                                            <span class="font-semibold">April 30, 2024</span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3 flex space-x-2">
+                                        <button onclick="scheduleSession('mentoring')" class="bg-purple-600 text-white px-3 py-1 rounded text-sm hover:bg-purple-700 transition-colors">
+                                            Schedule Session
+                                        </button>
+                                        <button onclick="viewProgress('mentoring')" class="bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-300 transition-colors">
+                                            View Progress
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Key Results -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">Key Results This Quarter</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h5 class="font-semibold text-gray-900">API Response Time</h5>
+                                        <span class="text-green-600 font-semibold">Achieved</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm mb-2">Reduced average response time from 500ms to 350ms</p>
+                                    <div class="text-xs text-gray-500">Target: 350ms | Current: 345ms</div>
+                                </div>
+                                
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h5 class="font-semibold text-gray-900">Code Quality Score</h5>
+                                        <span class="text-blue-600 font-semibold">In Progress</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm mb-2">Maintain code quality score above 90%</p>
+                                    <div class="text-xs text-gray-500">Target: 90% | Current: 87%</div>
+                                </div>
+                                
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h5 class="font-semibold text-gray-900">Team Collaboration</h5>
+                                        <span class="text-green-600 font-semibold">Achieved</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm mb-2">Lead 3 cross-team projects successfully</p>
+                                    <div class="text-xs text-gray-500">Target: 3 projects | Completed: 3 projects</div>
+                                </div>
+                                
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h5 class="font-semibold text-gray-900">Technical Documentation</h5>
+                                        <span class="text-orange-600 font-semibold">At Risk</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm mb-2">Document 5 core system components</p>
+                                    <div class="text-xs text-gray-500">Target: 5 components | Current: 2 components</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Section -->
+            <div id="team-section" class="section-content hidden">
+                <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6">My Team</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <span class="text-blue-600 font-semibold">SJ</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Sarah Johnson</h4>
+                                    <p class="text-gray-600 text-sm">Marketing Manager</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">My direct manager - excellent leadership and strategic thinking</p>
+                            <div class="flex space-x-2">
+                                <button onclick="requestFeedbackFrom('sarah')" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors">
+                                    Request Feedback
+                                </button>
+                                <button onclick="scheduleMeeting('sarah')" class="bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-300 transition-colors">
+                                    Schedule Meeting
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                    <span class="text-green-600 font-semibold">EW</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Emily Wilson</h4>
+                                    <p class="text-gray-600 text-sm">UX Designer</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">Collaborative team member with great design skills</p>
+                            <div class="flex space-x-2">
+                                <button onclick="provideFeedbackTo('emily')" class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 transition-colors">
+                                    Give Feedback
+                                </button>
+                                <button onclick="collaborate('emily')" class="bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-300 transition-colors">
+                                    Collaborate
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <span class="text-purple-600 font-semibold">AC</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Alex Chen</h4>
+                                    <p class="text-gray-600 text-sm">Data Analyst</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">Data expert with strong analytical capabilities</p>
+                            <div class="flex space-x-2">
+                                <button onclick="provideFeedbackTo('alex')" class="bg-purple-600 text-white px-3 py-1 rounded text-sm hover:bg-purple-700 transition-colors">
+                                    Give Feedback
+                                </button>
+                                <button onclick="shareData('alex')" class="bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-300 transition-colors">
+                                    Share Data
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                                    <span class="text-orange-600 font-semibold">LW</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Lisa Wang</h4>
+                                    <p class="text-gray-600 text-sm">Content Strategist</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">Creative content creator with strategic mindset</p>
+                            <div class="flex space-x-2">
+                                <button onclick="provideFeedbackTo('lisa')" class="bg-orange-600 text-white px-3 py-1 rounded text-sm hover:bg-orange-700 transition-colors">
+                                    Give Feedback
+                                </button>
+                                <button onclick="brainstorm('lisa')" class="bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-300 transition-colors">
+                                    Brainstorm
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                    <span class="text-red-600 font-semibold">DM</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">David Martinez</h4>
+                                    <p class="text-gray-600 text-sm">SEO Specialist</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">SEO expert with deep technical knowledge</p>
+                            <div class="flex space-x-2">
+                                <button onclick="provideFeedbackTo('david')" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors">
+                                    Give Feedback
+                                </button>
+                                <button onclick="discussSEO('david')" class="bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-300 transition-colors">
+                                    Discuss SEO
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center">
+                                    <span class="text-indigo-600 font-semibold">RH</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Rachel Kim</h4>
+                                    <p class="text-gray-600 text-sm">Social Media Manager</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">Social media guru with creative campaigns</p>
+                            <div class="flex space-x-2">
+                                <button onclick="provideFeedbackTo('rachel')" class="bg-indigo-600 text-white px-3 py-1 rounded text-sm hover:bg-indigo-700 transition-colors">
+                                    Give Feedback
+                                </button>
+                                <button onclick="discussSocial('rachel')" class="bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-300 transition-colors">
+                                    Discuss Social
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Section -->
+            <div id="calendar-section" class="section-content hidden">
+                <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6">My Calendar</h3>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Calendar View -->
+                        <div class="lg:col-span-2">
+                            <div class="mb-4 flex items-center justify-between">
+                                <h4 class="text-lg font-semibold text-gray-900">March 2024</h4>
+                                <div class="flex space-x-2">
+                                    <button class="p-2 text-gray-600 hover:text-green-600 transition-colors">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <button class="p-2 text-gray-600 hover:text-green-600 transition-colors">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-7 gap-1 mb-2">
+                                <div class="p-2 text-center text-sm font-semibold text-gray-600">Sun</div>
+                                <div class="p-2 text-center text-sm font-semibold text-gray-600">Mon</div>
+                                <div class="p-2 text-center text-sm font-semibold text-gray-600">Tue</div>
+                                <div class="p-2 text-center text-sm font-semibold text-gray-600">Wed</div>
+                                <div class="p-2 text-center text-sm font-semibold text-gray-600">Thu</div>
+                                <div class="p-2 text-center text-sm font-semibold text-gray-600">Fri</div>
+                                <div class="p-2 text-center text-sm font-semibold text-gray-600">Sat</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-7 gap-1">
+                                <!-- Calendar days -->
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">25</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">26</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">27</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">28</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">29</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">1</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">2</div>
+                                </div>
+                                
+                                <!-- Week 1 -->
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">3</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">4</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">5</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">6</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">7</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">8</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">9</div>
+                                </div>
+                                
+                                <!-- Week 2 -->
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">10</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">11</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">12</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">13</div>
+                                    <div class="text-xs bg-blue-100 text-blue-800 rounded p-1 mt-1">Team Meeting</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">14</div>
+                                    <div class="text-xs bg-green-100 text-green-800 rounded p-1 mt-1">1-on-1 Sarah</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">15</div>
+                                    <div class="text-xs bg-red-100 text-red-800 rounded p-1 mt-1">Feedback Due</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">16</div>
+                                </div>
+                                
+                                <!-- Current week -->
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer bg-green-50">
+                                    <div class="text-sm text-gray-900 font-semibold">17</div>
+                                    <div class="text-xs bg-green-100 text-green-800 rounded p-1 mt-1">Performance Review</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">18</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">19</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">20</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">21</div>
+                                    <div class="text-xs bg-purple-100 text-purple-800 rounded p-1 mt-1">Training Session</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">22</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">23</div>
+                                </div>
+                                
+                                <!-- Next week -->
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">24</div>
+                                    <div class="text-xs bg-orange-100 text-orange-800 rounded p-1 mt-1">Project Deadline</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">25</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">26</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">27</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">28</div>
+                                    <div class="text-xs bg-teal-100 text-teal-800 rounded p-1 mt-1">Team Building</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">29</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">30</div>
+                                </div>
+                                
+                                <!-- Final days -->
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">31</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">1</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">2</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">3</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">4</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">5</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">6</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Upcoming Events -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">Upcoming Events</h4>
+                            <div class="space-y-3">
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h5 class="font-semibold text-gray-900">Performance Review</h5>
+                                            <p class="text-gray-600 text-sm">Q1 2024 performance discussion</p>
+                                            <p class="text-gray-500 text-xs">Today, 2:00 PM - 3:00 PM</p>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button onclick="prepareReview()" class="text-blue-600 hover:text-blue-800">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button onclick="rescheduleEvent('review')" class="text-orange-600 hover:text-orange-800">
+                                                <i class="fas fa-clock"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h5 class="font-semibold text-gray-900">Leadership Training Session</h5>
+                                            <p class="text-gray-600 text-sm">Advanced communication skills workshop</p>
+                                            <p class="text-gray-500 text-xs">March 21, 9:00 AM - 5:00 PM</p>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button onclick="prepareTraining()" class="text-blue-600 hover:text-blue-800">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button onclick="cancelEvent('training')" class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h5 class="font-semibold text-gray-900">Project Deadline</h5>
+                                            <p class="text-gray-600 text-sm">System optimization project delivery</p>
+                                            <p class="text-gray-500 text-xs">March 24, 5:00 PM</p>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button onclick="viewProject('optimization')" class="text-blue-600 hover:text-blue-800">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button onclick="requestExtension('project')" class="text-orange-600 hover:text-orange-800">
+                                                <i class="fas fa-clock"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Navigation and section management
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.nav-item').classList.add('active');
+            
+            // Update page title
+            const titles = {
+                'dashboard': ['Welcome back, Mike!', 'Here\'s your progress and upcoming activities'],
+                'feedback': ['My Feedback', 'Manage feedback requests and history'],
+                'development': ['My Development', 'Track your learning and growth plans'],
+                'goals': ['Goals & OKRs', 'Monitor your objectives and key results'],
+                'team': ['My Team', 'Connect with your colleagues'],
+                'calendar': ['My Calendar', 'Manage your schedule and meetings']
+            };
+            
+            if (titles[sectionName]) {
+                document.getElementById('page-title').textContent = titles[sectionName][0];
+                document.getElementById('page-subtitle').textContent = titles[sectionName][1];
+            }
+        }
+
+        // Initialize charts
+        function initializeCharts() {
+            // Performance Trend Chart
+            const performanceData = [{
+                x: ['Q1 2023', 'Q2 2023', 'Q3 2023', 'Q4 2023', 'Q1 2024'],
+                y: [3.8, 4.0, 4.1, 4.3, 4.3],
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: { color: '#059669', width: 3 },
+                marker: { color: '#059669', size: 8 }
+            }];
+            
+            Plotly.newPlot('performance-trend-chart', performanceData, {
+                title: '',
+                xaxis: { title: 'Quarter' },
+                yaxis: { title: 'Performance Score' },
+                margin: { t: 20, r: 20, b: 40, l: 40 }
+            }, { displayModeBar: false, responsive: true });
+
+            // Skills Assessment Chart
+            const skillsData = [{
+                r: [4.3, 3.8, 4.5, 4.1, 4.2],
+                theta: ['Technical Skills', 'Communication', 'Leadership', 'Innovation', 'Teamwork'],
+                type: 'scatterpolar',
+                fill: 'toself',
+                marker: { color: '#059669' },
+                line: { color: '#059669' }
+            }];
+            
+            Plotly.newPlot('skills-assessment-chart', skillsData, {
+                polar: {
+                    radialaxis: {
+                        visible: true,
+                        range: [0, 5]
+                    }
+                },
+                margin: { t: 20, r: 20, b: 20, l: 20 }
+            }, { displayModeBar: false, responsive: true });
+        }
+
+        // Quick action functions
+        function provideFeedback() {
+            alert('Provide Feedback functionality would open a form to give feedback to colleagues.');
+        }
+
+        function requestFeedback() {
+            alert('Request Feedback functionality would open a form to request feedback from colleagues.');
+        }
+
+        function updateGoals() {
+            alert('Update Goals functionality would open goal management interface.');
+        }
+
+        function viewAchievements() {
+            alert('View Achievements functionality would show all earned achievements and recognition.');
+        }
+
+        // Feedback functions
+        function startFeedback(employeeId) {
+            alert(`Start feedback for ${employeeId} would open the feedback form.`);
+        }
+
+        function declineFeedback(employeeId) {
+            if (confirm(`Are you sure you want to decline feedback for ${employeeId}?`)) {
+                alert('Feedback request declined.');
+            }
+        }
+
+        function remindLater(employeeId) {
+            alert(`Reminder postponed for ${employeeId}.`);
+        }
+
+        function urgentFeedback(employeeId) {
+            alert(`Urgent feedback for ${employeeId} would open immediately.`);
+        }
+
+        function requestExtension(employeeId) {
+            alert(`Request extension for ${employeeId} would open extension request form.`);
+        }
+
+        function viewFeedback(feedbackId) {
+            alert(`View feedback ${feedbackId} would show detailed feedback information.`);
+        }
+
+        // Development functions
+        function updateProgress() {
+            alert('Update Progress functionality would open development plan progress form.');
+        }
+
+        function updateActivity(activityId) {
+            alert(`Update activity ${activityId} would open progress update form.`);
+        }
+
+        function prepareWorkshop(workshopId) {
+            alert(`Prepare for ${workshopId} would show workshop materials and preparation checklist.`);
+        }
+
+        function findMentor() {
+            alert('Find Mentor functionality would show available mentors and matching process.');
+        }
+
+        function addToLibrary(resourceId) {
+            alert(`Add ${resourceId} to personal learning library.`);
+        }
+
+        function enrollCourse(courseId) {
+            alert(`Enroll in ${courseId} would register for the course.`);
+        }
+
+        function watchTalks(talksId) {
+            alert(`Watch ${talksId} would open the video collection.`);
+        }
+
+        function joinGroup(groupId) {
+            alert(`Join ${groupId} would register for the networking group.`);
+        }
+
+        // Goals functions
+        function createGoal() {
+            alert('Create Goal functionality would open goal creation wizard.');
+        }
+
+        function updateGoal(goalId) {
+            alert(`Update goal ${goalId} would open progress update form.`);
+        }
+
+        function viewDetails(goalId) {
+            alert(`View details for ${goalId} would show comprehensive goal information.`);
+        }
+
+        function viewCertificate(certificateId) {
+            alert(`View certificate ${certificateId} would show the earned certificate.`);
+        }
+
+        function shareAchievement(achievementId) {
+            alert(`Share achievement ${achievementId} would open sharing options.`);
+        }
+
+        function scheduleSession(sessionId) {
+            alert(`Schedule session ${sessionId} would open calendar booking.`);
+        }
+
+        // Team functions
+        function requestFeedbackFrom(employeeId) {
+            alert(`Request feedback from ${employeeId} would open feedback request form.`);
+        }
+
+        function scheduleMeeting(employeeId) {
+            alert(`Schedule meeting with ${employeeId} would open calendar booking.`);
+        }
+
+        function provideFeedbackTo(employeeId) {
+            alert(`Provide feedback to ${employeeId} would open feedback form.`);
+        }
+
+        function collaborate(employeeId) {
+            alert(`Collaborate with ${employeeId} would open collaboration tools.`);
+        }
+
+        function shareData(employeeId) {
+            alert(`Share data with ${employeeId} would open data sharing interface.`);
+        }
+
+        function brainstorm(employeeId) {
+            alert(`Brainstorm with ${employeeId} would open collaboration workspace.`);
+        }
+
+        function discussSEO(employeeId) {
+            alert(`Discuss SEO with ${employeeId} would open discussion interface.`);
+        }
+
+        function discussSocial(employeeId) {
+            alert(`Discuss social media with ${employeeId} would open discussion interface.`);
+        }
+
+        // Calendar functions
+        function prepareReview() {
+            alert('Prepare Review functionality would show review preparation checklist.');
+        }
+
+        function rescheduleEvent(eventId) {
+            alert(`Reschedule ${eventId} would open calendar to select new time.`);
+        }
+
+        function prepareTraining() {
+            alert('Prepare Training functionality would show training preparation materials.');
+        }
+
+        function cancelEvent(eventId) {
+            if (confirm(`Are you sure you want to cancel ${eventId}?`)) {
+                alert('Event cancelled successfully.');
+            }
+        }
+
+        function viewProject(projectId) {
+            alert(`View project ${projectId} would show project details and progress.`);
+        }
+
+        function requestExtension(requestId) {
+            alert(`Request extension for ${requestId} would open extension request form.`);
+        }
+
+        // Utility functions
+        function logout() {
+            localStorage.removeItem('demoRole');
+            window.location.href = 'demo-login.html';
+        }
+
+        function showNotifications() {
+            alert('Notifications panel would show employee-specific notifications and alerts.');
+        }
+
+        function showHelp() {
+            alert('Help panel would show contextual help for employees.');
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if user is logged in
+            const demoRole = localStorage.getItem('demoRole');
+            if (!demoRole || demoRole !== 'employee') {
+                window.location.href = 'demo-login.html';
+                return;
+            }
+            
+            // Initialize charts
+            setTimeout(initializeCharts, 500);
+        });
+    </script>
+</body>
+</html>

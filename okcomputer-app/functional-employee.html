@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>360Pro - Employee Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/3.0.3/plotly.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .competency-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .question-item { transition: all 0.3s ease; }
+        .question-item:hover { background-color: #F3F4F6; }
+        .progress-circle { transition: stroke-dashoffset 0.35s; }
+        .modal { backdrop-filter: blur(10px); }
+        .notification { animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Navigation Header -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 fixed top-0 left-0 right-0 z-40">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-sync-alt text-white text-sm"></i>
+                        </div>
+                        <span class="ml-3 text-xl font-semibold text-gray-900">360Pro</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 rounded-md hover:bg-gray-100 relative">
+                        <i class="fas fa-bell text-gray-600"></i>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-white text-sm"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">Mike Davis</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="pt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900">Employee Dashboard</h1>
+                <p class="text-gray-600 mt-2">Manage your 360-degree feedback and development</p>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-tasks text-blue-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Active Programs</p>
+                            <p class="text-2xl font-bold text-gray-900">3</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Completed</p>
+                            <p class="text-2xl font-bold text-gray-900">12</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-star text-purple-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Avg Rating</p>
+                            <p class="text-2xl font-bold text-gray-900">4.2</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-chart-line text-orange-600 text-xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Improvement</p>
+                            <p class="text-2xl font-bold text-gray-900">+15%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left Column: Competency Management -->
+                <div class="lg:col-span-2">
+                    <!-- Competency Selection -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-xl font-semibold text-gray-900">Competency Dictionary</h2>
+                            <button onclick="openCompetencySelector()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-plus mr-2"></i>Add Competency
+                            </button>
+                        </div>
+
+                        <!-- Search and Progress -->
+                        <div class="mb-6">
+                            <div class="relative mb-4">
+                                <input type="text" id="competencySearch" placeholder="Search competencies..." 
+                                       class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                       oninput="searchCompetencies(this.value)">
+                                <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+                                <div id="competencySuggestions" class="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg mt-1 hidden z-10 max-h-60 overflow-y-auto">
+                                    <!-- Suggestions will be populated here -->
+                                </div>
+                            </div>
+
+                            <!-- Progress Tracking -->
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm font-medium text-gray-700">Competency Progress</span>
+                                    <span id="competencyProgressText" class="text-sm text-gray-600">3 / 8 selected</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div id="competencyProgressBar" class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300" style="width: 37.5%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                    <span>Minimum: 5</span>
+                                    <span>Maximum: 12</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Selected Competencies -->
+                        <div id="selectedCompetencies" class="space-y-4">
+                            <!-- Selected competencies will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- Question Management -->
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-xl font-semibold text-gray-900">Question Bank</h2>
+                            <div class="flex space-x-2">
+                                <button onclick="autoSelectQuestions()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                    <i class="fas fa-magic mr-2"></i>Auto-Select
+                                </button>
+                                <button onclick="openQuestionBuilder()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
+                                    <i class="fas fa-plus mr-2"></i>Add Question
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Question Progress -->
+                        <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-gray-700">Question Progress</span>
+                                <span id="questionProgressText" class="text-sm text-gray-600">24 / 40 questions</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div id="questionProgressBar" class="bg-gradient-to-r from-green-500 to-blue-600 h-2 rounded-full transition-all duration-300" style="width: 60%"></div>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>Minimum Required: 20</span>
+                                <span>Maximum Possible: 40</span>
+                            </div>
+                        </div>
+
+                        <!-- Questions List -->
+                        <div id="questionsList" class="space-y-3">
+                            <!-- Questions will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Performance & Development -->
+                <div class="space-y-6">
+                    <!-- Current Program -->
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Current Program</h3>
+                        <div class="text-center">
+                            <div class="w-24 h-24 mx-auto mb-4">
+                                <svg class="w-24 h-24 transform -rotate-90">
+                                    <circle cx="48" cy="48" r="40" stroke="#E5E7EB" stroke-width="8" fill="none"/>
+                                    <circle cx="48" cy="48" r="40" stroke="#3B82F6" stroke-width="8" fill="none" 
+                                            stroke-dasharray="251.2" stroke-dashoffset="75.36" class="progress-circle"/>
+                                </svg>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span class="text-2xl font-bold text-gray-900">70%</span>
+                                </div>
+                            </div>
+                            <h4 class="font-medium text-gray-900 mb-2">Leadership Excellence</h4>
+                            <p class="text-sm text-gray-600 mb-4">Due: March 30, 2024</p>
+                            <button onclick="continueProgram()" class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                Continue
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                        <div class="space-y-3">
+                            <button onclick="requestFeedback()" class="w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-left">
+                                <i class="fas fa-paper-plane mr-2"></i>Request Feedback
+                            </button>
+                            <button onclick="viewReports()" class="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-left">
+                                <i class="fas fa-chart-bar mr-2"></i>View Reports
+                            </button>
+                            <button onclick="updateProfile()" class="w-full bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors text-left">
+                                <i class="fas fa-user mr-2"></i>Update Profile
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mt-1">
+                                    <i class="fas fa-check text-green-600 text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Completed assessment</p>
+                                    <p class="text-xs text-gray-500">2 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mt-1">
+                                    <i class="fas fa-envelope text-blue-600 text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Feedback request sent</p>
+                                    <p class="text-xs text-gray-500">1 day ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mt-1">
+                                    <i class="fas fa-star text-purple-600 text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">New competency added</p>
+                                    <p class="text-xs text-gray-500">2 days ago</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Competency Selector Modal -->
+    <div id="competencyModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-900">Competency Dictionary</h3>
+                    <button onclick="closeCompetencyModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Filter Options -->
+                <div class="flex flex-col lg:flex-row gap-4 mb-6">
+                    <div class="flex-1">
+                        <input type="text" id="modalCompetencySearch" placeholder="Search competencies..." 
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               oninput="filterModalCompetencies(this.value)">
+                    </div>
+                    <div class="lg:w-48">
+                        <select id="categoryFilter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                onchange="filterModalCompetencies()">
+                            <option value="">All Categories</option>
+                            <option value="leadership">Leadership</option>
+                            <option value="technical">Technical</option>
+                            <option value="communication">Communication</option>
+                            <option value="analytical">Analytical</option>
+                            <option value="interpersonal">Interpersonal</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Competency Grid -->
+                <div id="modalCompetencyGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
+                    <!-- Competencies will be populated here -->
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-6">
+                    <button onclick="closeCompetencyModal()" class="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+                    <button onclick="saveCompetencySelection()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Add Selected</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question Builder Modal -->
+    <div id="questionModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-900">Add Custom Question</h3>
+                    <button onclick="closeQuestionModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <form id="questionForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Competency</label>
+                        <select name="competency" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Select Competency</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Question Type</label>
+                        <select name="type" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="rating">Rating Scale (1-5)</option>
+                            <option value="text">Text Response</option>
+                            <option value="multiple">Multiple Choice</option>
+                            <option value="boolean">Yes/No</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Question Text</label>
+                        <textarea name="question" rows="4" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter your question here..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Weight (Importance 1-5)</label>
+                        <input type="range" name="weight" min="1" max="5" value="3" class="w-full" oninput="updateWeightDisplay(this.value)">
+                        <div class="flex justify-between text-xs text-gray-500 mt-1">
+                            <span>Low</span>
+                            <span id="weightDisplay">Medium (3)</span>
+                            <span>High</span>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="flex justify-end space-x-3 pt-6">
+                    <button onclick="closeQuestionModal()" class="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+                    <button onclick="saveQuestion()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Add Question</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="functional-employee.js"></script>
+</body>
+</html>

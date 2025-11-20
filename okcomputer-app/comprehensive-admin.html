@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>360Pro - Comprehensive Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/3.0.3/plotly.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar { transition: all 0.3s ease; }
+        .sidebar.collapsed { width: 80px; }
+        .sidebar.collapsed .nav-text { display: none; }
+        .main-content { transition: all 0.3s ease; }
+        .modal { backdrop-filter: blur(10px); }
+        .competency-item:hover { transform: translateY(-2px); }
+        .question-card { transition: all 0.3s ease; }
+        .question-card:hover { transform: translateY(-1px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .progress-ring { transition: stroke-dashoffset 0.35s; }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Navigation Header -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 fixed top-0 left-0 right-0 z-40">
+        <div class="px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="p-2 rounded-md hover:bg-gray-100">
+                        <i class="fas fa-bars text-gray-600"></i>
+                    </button>
+                    <div class="ml-4 flex items-center">
+                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-sync-alt text-white text-sm"></i>
+                        </div>
+                        <span class="ml-3 text-xl font-semibold text-gray-900">360Pro</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 rounded-md hover:bg-gray-100 relative">
+                        <i class="fas fa-bell text-gray-600"></i>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-gray-600 text-sm"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">Admin User</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar fixed left-0 top-16 bottom-0 w-64 bg-white shadow-lg z-30 overflow-y-auto">
+        <div class="p-4">
+            <nav class="space-y-2">
+                <a href="#" class="flex items-center px-3 py-2 rounded-lg bg-blue-50 text-blue-700">
+                    <i class="fas fa-tachometer-alt text-lg"></i>
+                    <span class="nav-text ml-3 font-medium">Dashboard</span>
+                </a>
+                <a href="#" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700" onclick="showSection('clients')">
+                    <i class="fas fa-building text-lg"></i>
+                    <span class="nav-text ml-3">Client Management</span>
+                </a>
+                <a href="#" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700" onclick="showSection('programs')">
+                    <i class="fas fa-project-diagram text-lg"></i>
+                    <span class="nav-text ml-3">Programs</span>
+                </a>
+                <a href="#" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700" onclick="showSection('competencies')">
+                    <i class="fas fa-book text-lg"></i>
+                    <span class="nav-text ml-3">Competency Dictionary</span>
+                </a>
+                <a href="#" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700" onclick="showSection('questions')">
+                    <i class="fas fa-question-circle text-lg"></i>
+                    <span class="nav-text ml-3">Question Bank</span>
+                </a>
+                <a href="#" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700" onclick="showSection('users')">
+                    <i class="fas fa-users text-lg"></i>
+                    <span class="nav-text ml-3">User Management</span>
+                </a>
+                <a href="#" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700" onclick="showSection('analytics')">
+                    <i class="fas fa-chart-bar text-lg"></i>
+                    <span class="nav-text ml-3">Analytics</span>
+                </a>
+                <a href="#" class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700" onclick="showSection('communications')">
+                    <i class="fas fa-envelope text-lg"></i>
+                    <span class="nav-text ml-3">Communications</span>
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent" class="main-content ml-64 mt-16">
+        <!-- Dashboard Overview -->
+        <div id="dashboard" class="p-6">
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+                <p class="text-gray-600 mt-1">Manage your 360-degree feedback platform</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Total Clients</p>
+                            <p class="text-2xl font-bold text-gray-900 mt-1">24</p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-building text-blue-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-sm text-green-600 font-medium">+12% from last month</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Active Programs</p>
+                            <p class="text-2xl font-bold text-gray-900 mt-1">18</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-project-diagram text-green-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-sm text-green-600 font-medium">+8% from last month</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Total Users</p>
+                            <p class="text-2xl font-bold text-gray-900 mt-1">1,247</p>
+                        </div>
+                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-users text-purple-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-sm text-green-600 font-medium">+15% from last month</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Competencies</p>
+                            <p class="text-2xl font-bold text-gray-900 mt-1">156</p>
+                        </div>
+                        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-book text-orange-600 text-xl"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <span class="text-sm text-green-600 font-medium">+23 this month</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Program Activity</h3>
+                    <div id="activityChart" style="height: 300px;"></div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Competency Usage</h3>
+                    <div id="competencyChart" style="height: 300px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Client Management Section -->
+        <div id="clients-section" class="p-6 hidden">
+            <div class="mb-6 flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">Client Management</h2>
+                    <p class="text-gray-600 mt-1">Manage your clients and their configurations</p>
+                </div>
+                <button onclick="openAddClientModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Add Client
+                </button>
+            </div>
+
+            <!-- Client Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="clientsGrid">
+                <!-- Client cards will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Programs Section -->
+        <div id="programs-section" class="p-6 hidden">
+            <div class="mb-6 flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">Program Management</h2>
+                    <p class="text-gray-600 mt-1">Manage feedback programs and cycles</p>
+                </div>
+                <button onclick="openAddProgramModal()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Create Program
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="programsGrid">
+                <!-- Program cards will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Competency Dictionary Section -->
+        <div id="competencies-section" class="p-6 hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Competency Dictionary</h2>
+                <p class="text-gray-600 mt-1">Manage competencies with auto-suggestion functionality</p>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                <div class="flex flex-col lg:flex-row gap-4">
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Search Competencies</label>
+                        <div class="relative">
+                            <input type="text" id="competencySearch" placeholder="Type to search competencies..." 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   oninput="searchCompetencies(this.value)">
+                            <div id="competencySuggestions" class="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg mt-1 hidden z-10 max-h-60 overflow-y-auto">
+                                <!-- Suggestions will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:w-48">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                        <select id="categoryFilter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">All Categories</option>
+                            <option value="leadership">Leadership</option>
+                            <option value="technical">Technical</option>
+                            <option value="communication">Communication</option>
+                            <option value="analytical">Analytical</option>
+                            <option value="interpersonal">Interpersonal</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="openAddCompetencyModal()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                            <i class="fas fa-plus mr-2"></i>Add Competency
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Competency Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="competenciesGrid">
+                <!-- Competency cards will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Question Bank Section -->
+        <div id="questions-section" class="p-6 hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Question Bank</h2>
+                <p class="text-gray-600 mt-1">Manage questions for each competency with progress tracking</p>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Question Bank Progress</h3>
+                    <span id="progressText" class="text-sm text-gray-600">156 / 200 questions (78%)</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-300" style="width: 78%"></div>
+                </div>
+                <div class="flex justify-between text-sm text-gray-600 mt-2">
+                    <span>Minimum Required: 120</span>
+                    <span>Maximum Possible: 200</span>
+                </div>
+            </div>
+
+            <!-- Question Management -->
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                <div class="flex flex-col lg:flex-row gap-4 items-end">
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Filter by Competency</label>
+                        <select id="questionCompetencyFilter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">All Competencies</option>
+                        </select>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="openAddQuestionModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
+                            <i class="fas fa-plus mr-2"></i>Add Question
+                        </button>
+                        <button onclick="bulkImportQuestions()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-upload mr-2"></i>Bulk Import
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Questions Grid -->
+            <div class="space-y-4" id="questionsList">
+                <!-- Questions will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- User Management Section -->
+        <div id="users-section" class="p-6 hidden">
+            <div class="mb-6 flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">User Management</h2>
+                    <p class="text-gray-600 mt-1">Manage system users and their roles</p>
+                </div>
+                <button onclick="openAddUserModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-plus mr-2"></i>Add User
+                </button>
+            </div>
+
+            <!-- Users Table -->
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- User rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Section -->
+        <div id="analytics-section" class="p-6 hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Analytics Dashboard</h2>
+                <p class="text-gray-600 mt-1">Comprehensive insights and reporting</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">User Engagement</h3>
+                    <div id="engagementChart" style="height: 300px;"></div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Feedback Completion Rates</h3>
+                    <div id="completionChart" style="height: 300px;"></div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">System Performance Metrics</h3>
+                <div id="performanceChart" style="height: 400px;"></div>
+            </div>
+        </div>
+
+        <!-- Communications Section -->
+        <div id="communications-section" class="p-6 hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Communication Hub</h2>
+                <p class="text-gray-600 mt-1">Manage email and WhatsApp communications</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Email Campaigns</h3>
+                    <div class="space-y-4">
+                        <button onclick="createEmailCampaign()" class="w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-envelope mr-2"></i>Create Email Campaign
+                        </button>
+                        <div class="space-y-2" id="emailCampaigns">
+                            <!-- Email campaigns will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">WhatsApp Messages</h3>
+                    <div class="space-y-4">
+                        <button onclick="createWhatsAppCampaign()" class="w-full bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                            <i class="fab fa-whatsapp mr-2"></i>Send WhatsApp Message
+                        </button>
+                        <div class="space-y-2" id="whatsappMessages">
+                            <!-- WhatsApp messages will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Client Modal -->
+    <div id="addClientModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-900">Add New Client</h3>
+                    <button onclick="closeAddClientModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <form id="addClientForm" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
+                            <input type="text" name="companyName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Industry</label>
+                            <select name="industry" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="technology">Technology</option>
+                                <option value="healthcare">Healthcare</option>
+                                <option value="finance">Finance</option>
+                                <option value="manufacturing">Manufacturing</option>
+                                <option value="retail">Retail</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Contact Email</label>
+                        <input type="email" name="contactEmail" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                        <input type="tel" name="phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                        <textarea name="address" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" onclick="closeAddClientModal()" class="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Add Client</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Competency Modal -->
+    <div id="addCompetencyModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-900">Add New Competency</h3>
+                    <button onclick="closeAddCompetencyModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <form id="addCompetencyForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Competency Name</label>
+                        <input type="text" name="name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                        <select name="category" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Select Category</option>
+                            <option value="leadership">Leadership</option>
+                            <option value="technical">Technical</option>
+                            <option value="communication">Communication</option>
+                            <option value="analytical">Analytical</option>
+                            <option value="interpersonal">Interpersonal</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <textarea name="description" rows="4" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Behavioral Indicators</label>
+                        <textarea name="indicators" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Enter behavioral indicators separated by new lines"></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" onclick="closeAddCompetencyModal()" class="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">Add Competency</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Question Modal -->
+    <div id="addQuestionModal" class="modal fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-900">Add New Question</h3>
+                    <button onclick="closeAddQuestionModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <form id="addQuestionForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Competency</label>
+                        <select name="competency" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Select Competency</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Question Text</label>
+                        <textarea name="question" rows="3" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Question Type</label>
+                        <select name="type" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="rating">Rating Scale</option>
+                            <option value="text">Text Response</option>
+                            <option value="multiple">Multiple Choice</option>
+                            <option value="boolean">Yes/No</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Weight (1-5)</label>
+                        <input type="number" name="weight" min="1" max="5" value="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" onclick="closeAddQuestionModal()" class="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Add Question</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="comprehensive-admin.js"></script>
+</body>
+</html>
