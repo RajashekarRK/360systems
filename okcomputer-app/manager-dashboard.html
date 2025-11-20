@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Dashboard - 360° Software Solution</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/3.0.3/plotly.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #2563EB;
+            --color-secondary: #0891B2;
+            --color-success: #059669;
+            --color-warning: #D97706;
+            --color-error: #DC2626;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #F8FAFC;
+        }
+        
+        .font-display {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .sidebar {
+            background: linear-gradient(180deg, var(--color-secondary) 0%, var(--color-success) 100%);
+        }
+        
+        .nav-item {
+            transition: all 0.2s ease;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid white;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.35s;
+            transform-origin: 50% 50%;
+        }
+        
+        .team-member-card {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(8, 145, 178, 0.05) 100%);
+        }
+    </style>
+</head>
+<body class="flex h-screen">
+    <!-- Sidebar -->
+    <div class="sidebar w-64 text-white flex flex-col">
+        <div class="p-6">
+            <h1 class="text-xl font-display font-bold">360° Solution</h1>
+            <p class="teal-200 text-sm">Manager Dashboard</p>
+        </div>
+        
+        <nav class="flex-1 px-4">
+            <div class="space-y-2">
+                <a href="#" class="nav-item active flex items-center px-4 py-3 rounded-lg" onclick="showSection('dashboard')">
+                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    Dashboard
+                </a>
+                <a href="#" class="nav-item flex items-center px-4 py-3 rounded-lg" onclick="showSection('team')">
+                    <i class="fas fa-users mr-3"></i>
+                    My Team
+                </a>
+                <a href="#" class="nav-item flex items-center px-4 py-3 rounded-lg" onclick="showSection('feedback')">
+                    <i class="fas fa-comments mr-3"></i>
+                    Feedback Reviews
+                </a>
+                <a href="#" class="nav-item flex items-center px-4 py-3 rounded-lg" onclick="showSection('development')">
+                    <i class="fas fa-route mr-3"></i>
+                    Development Plans
+                </a>
+                <a href="#" class="nav-item flex items-center px-4 py-3 rounded-lg" onclick="showSection('analytics')">
+                    <i class="fas fa-chart-bar mr-3"></i>
+                    Team Analytics
+                </a>
+                <a href="#" class="nav-item flex items-center px-4 py-3 rounded-lg" onclick="showSection('calendar')">
+                    <i class="fas fa-calendar mr-3"></i>
+                    Calendar
+                </a>
+            </div>
+        </nav>
+        
+        <div class="p-4 border-t border-teal-400">
+            <div class="flex items-center">
+                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center mr-3">
+                    <i class="fas fa-user text-teal-600 text-sm"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold">Sarah Johnson</p>
+                    <p class="text-teal-200 text-xs">Marketing Manager</p>
+                </div>
+            </div>
+            <button onclick="logout()" class="w-full mt-3 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg text-sm transition-colors">
+                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 id="page-title" class="text-2xl font-display font-bold text-gray-900">Manager Dashboard</h2>
+                        <p id="page-subtitle" class="text-gray-600">Team insights and management tools</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button onclick="showNotifications()" class="relative p-2 text-gray-600 hover:text-teal-600 transition-colors">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">2</span>
+                        </button>
+                        <button onclick="showHelp()" class="p-2 text-gray-600 hover:text-teal-600 transition-colors">
+                            <i class="fas fa-question-circle text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <main class="flex-1 overflow-y-auto p-6">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section" class="section-content">
+                <!-- Team Overview Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="card-hover bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm">Team Members</p>
+                                <p class="text-2xl font-bold text-gray-900">8</p>
+                                <p class="text-green-600 text-xs">All active</p>
+                            </div>
+                            <div class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-users text-teal-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-hover bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm">Pending Reviews</p>
+                                <p class="text-2xl font-bold text-gray-900">12</p>
+                                <p class="text-orange-600 text-xs">Need attention</p>
+                            </div>
+                            <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-clock text-orange-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-hover bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm">Avg Performance</p>
+                                <p class="text-2xl font-bold text-gray-900">4.2</p>
+                                <p class="text-green-600 text-xs">+0.3 from last cycle</p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-star text-green-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-hover bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm">Development Plans</p>
+                                <p class="text-2xl font-bold text-gray-900">6</p>
+                                <p class="text-blue-600 text-xs">In progress</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-route text-blue-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <button onclick="requestFeedback()" class="bg-teal-600 text-white p-4 rounded-lg hover:bg-teal-700 transition-colors text-center">
+                            <i class="fas fa-comments text-2xl mb-2"></i>
+                            <div class="font-semibold">Request Feedback</div>
+                            <div class="text-sm opacity-90">For team member</div>
+                        </button>
+                        <button onclick="scheduleCheckIn()" class="bg-blue-600 text-white p-4 rounded-lg hover:bg-blue-700 transition-colors text-center">
+                            <i class="fas fa-calendar-plus text-2xl mb-2"></i>
+                            <div class="font-semibold">Schedule Check-in</div>
+                            <div class="text-sm opacity-90">1-on-1 meeting</div>
+                        </button>
+                        <button onclick="createDevPlan()" class="bg-green-600 text-white p-4 rounded-lg hover:bg-green-700 transition-colors text-center">
+                            <i class="fas fa-user-graduate text-2xl mb-2"></i>
+                            <div class="font-semibold">Development Plan</div>
+                            <div class="text-sm opacity-90">Create new plan</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Team Performance Overview -->
+                <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-6">Team Performance Overview</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="text-md font-semibold text-gray-900 mb-4">Performance Distribution</h4>
+                            <div id="performance-distribution-chart" class="w-full h-64"></div>
+                        </div>
+                        <div>
+                            <h4 class="text-md font-semibold text-gray-900 mb-4">Skills Radar</h4>
+                            <div id="skills-radar-chart" class="w-full h-64"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Team Activity -->
+                <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Team Activity</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-check text-green-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-900">Mike Johnson completed feedback</p>
+                                <p class="text-gray-600 text-sm">Submitted peer review for Emily Wilson</p>
+                            </div>
+                            <span class="text-gray-500 text-sm">15 min ago</span>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-calendar text-blue-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-900">1-on-1 scheduled with Alex Chen</p>
+                                <p class="text-gray-600 text-sm">Meeting scheduled for tomorrow at 2:00 PM</p>
+                            </div>
+                            <span class="text-gray-500 text-sm">1 hour ago</span>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-exclamation text-orange-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-semibold text-gray-900">Feedback deadline approaching</p>
+                                <p class="text-gray-600 text-sm">3 team members have pending feedback submissions</p>
+                            </div>
+                            <span class="text-gray-500 text-sm">2 hours ago</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Management Section -->
+            <div id="team-section" class="section-content hidden">
+                <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100 mb-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-semibold text-gray-900">My Team</h3>
+                        <button onclick="addTeamMember()" class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors">
+                            <i class="fas fa-plus mr-2"></i>Add Member
+                        </button>
+                    </div>
+
+                    <!-- Team Members Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="team-member-card rounded-xl p-6 border border-gray-200">
+                            <div class="flex items-center mb-4">
+                                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                    <span class="text-blue-600 font-bold text-xl">MJ</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Mike Johnson</h4>
+                                    <p class="text-gray-600 text-sm">Senior Developer</p>
+                                    <p class="text-gray-500 text-xs">mike.johnson@company.com</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-gray-600">Performance Score</span>
+                                    <span class="text-sm font-semibold text-teal-600">4.3/5.0</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-teal-600 h-2 rounded-full" style="width: 86%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-gray-600">Last Review</span>
+                                    <span class="text-sm text-gray-500">2 weeks ago</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-2">
+                                <button onclick="viewProfile('mike')" class="flex-1 bg-teal-600 text-white py-2 px-3 rounded-lg text-sm hover:bg-teal-700 transition-colors">
+                                    View Profile
+                                </button>
+                                <button onclick="scheduleMeeting('mike')" class="flex-1 bg-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm hover:bg-gray-300 transition-colors">
+                                    Meeting
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="team-member-card rounded-xl p-6 border border-gray-200">
+                            <div class="flex items-center mb-4">
+                                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                    <span class="text-green-600 font-bold text-xl">EW</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Emily Wilson</h4>
+                                    <p class="text-gray-600 text-sm">UX Designer</p>
+                                    <p class="text-gray-500 text-xs">emily.wilson@company.com</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-gray-600">Performance Score</span>
+                                    <span class="text-sm font-semibold text-teal-600">4.1/5.0</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-teal-600 h-2 rounded-full" style="width: 82%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-gray-600">Last Review</span>
+                                    <span class="text-sm text-gray-500">1 week ago</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-2">
+                                <button onclick="viewProfile('emily')" class="flex-1 bg-teal-600 text-white py-2 px-3 rounded-lg text-sm hover:bg-teal-700 transition-colors">
+                                    View Profile
+                                </button>
+                                <button onclick="scheduleMeeting('emily')" class="flex-1 bg-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm hover:bg-gray-300 transition-colors">
+                                    Meeting
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="team-member-card rounded-xl p-6 border border-gray-200">
+                            <div class="flex items-center mb-4">
+                                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                                    <span class="text-purple-600 font-bold text-xl">AC</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Alex Chen</h4>
+                                    <p class="text-gray-600 text-sm">Data Analyst</p>
+                                    <p class="text-gray-500 text-xs">alex.chen@company.com</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-gray-600">Performance Score</span>
+                                    <span class="text-sm font-semibold text-teal-600">3.9/5.0</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-teal-600 h-2 rounded-full" style="width: 78%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-gray-600">Last Review</span>
+                                    <span class="text-sm text-gray-500">3 weeks ago</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-2">
+                                <button onclick="viewProfile('alex')" class="flex-1 bg-teal-600 text-white py-2 px-3 rounded-lg text-sm hover:bg-teal-700 transition-colors">
+                                    View Profile
+                                </button>
+                                <button onclick="scheduleMeeting('alex')" class="flex-1 bg-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm hover:bg-gray-300 transition-colors">
+                                    Meeting
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="team-member-card rounded-xl p-6 border border-gray-200">
+                            <div class="flex items-center mb-4">
+                                <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mr-4">
+                                    <span class="text-orange-600 font-bold text-xl">LW</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Lisa Wang</h4>
+                                    <p class="text-gray-600 text-sm">Content Strategist</p>
+                                    <p class="text-gray-500 text-xs">lisa.wang@company.com</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-gray-600">Performance Score</span>
+                                    <span class="text-sm font-semibold text-teal-600">4.4/5.0</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-teal-600 h-2 rounded-full" style="width: 88%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-gray-600">Last Review</span>
+                                    <span class="text-sm text-gray-500">1 day ago</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-2">
+                                <button onclick="viewProfile('lisa')" class="flex-1 bg-teal-600 text-white py-2 px-3 rounded-lg text-sm hover:bg-teal-700 transition-colors">
+                                    View Profile
+                                </button>
+                                <button onclick="scheduleMeeting('lisa')" class="flex-1 bg-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm hover:bg-gray-300 transition-colors">
+                                    Meeting
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="team-member-card rounded-xl p-6 border border-gray-200">
+                            <div class="flex items-center mb-4">
+                                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mr-4">
+                                    <span class="text-red-600 font-bold text-xl">DM</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">David Martinez</h4>
+                                    <p class="text-gray-600 text-sm">SEO Specialist</p>
+                                    <p class="text-gray-500 text-xs">david.martinez@company.com</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-gray-600">Performance Score</span>
+                                    <span class="text-sm font-semibold text-teal-600">4.0/5.0</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-teal-600 h-2 rounded-full" style="width: 80%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-gray-600">Last Review</span>
+                                    <span class="text-sm text-gray-500">4 days ago</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-2">
+                                <button onclick="viewProfile('david')" class="flex-1 bg-teal-600 text-white py-2 px-3 rounded-lg text-sm hover:bg-teal-700 transition-colors">
+                                    View Profile
+                                </button>
+                                <button onclick="scheduleMeeting('david')" class="flex-1 bg-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm hover:bg-gray-300 transition-colors">
+                                    Meeting
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="team-member-card rounded-xl p-6 border border-gray-200">
+                            <div class="flex items-center mb-4">
+                                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mr-4">
+                                    <span class="text-indigo-600 font-bold text-xl">RH</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Rachel Kim</h4>
+                                    <p class="text-gray-600 text-sm">Social Media Manager</p>
+                                    <p class="text-gray-500 text-xs">rachel.kim@company.com</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-gray-600">Performance Score</span>
+                                    <span class="text-sm font-semibold text-teal-600">4.2/5.0</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-teal-600 h-2 rounded-full" style="width: 84%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm text-gray-600">Last Review</span>
+                                    <span class="text-sm text-gray-500">5 days ago</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-2">
+                                <button onclick="viewProfile('rachel')" class="flex-1 bg-teal-600 text-white py-2 px-3 rounded-lg text-sm hover:bg-teal-700 transition-colors">
+                                    View Profile
+                                </button>
+                                <button onclick="scheduleMeeting('rachel')" class="flex-1 bg-gray-200 text-gray-700 py-2 px-3 rounded-lg text-sm hover:bg-gray-300 transition-colors">
+                                    Meeting
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback Reviews Section -->
+            <div id="feedback-section" class="section-content hidden">
+                <div class="space-y-6">
+                    <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-6">Feedback Review Center</h3>
+                        
+                        <!-- Pending Reviews -->
+                        <div class="mb-8">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">Pending Reviews (3)</h4>
+                            <div class="space-y-4">
+                                <div class="border border-orange-200 rounded-lg p-4 bg-orange-50">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h5 class="font-semibold text-gray-900">Mike Johnson - Self Assessment</h5>
+                                            <p class="text-gray-600 text-sm">Q1 2024 Performance Review - Due in 2 days</p>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button onclick="startReview('mike-self')" class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors">
+                                                Start Review
+                                            </button>
+                                            <button onclick="remindEmployee('mike')" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                                                Remind
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-orange-200 rounded-lg p-4 bg-orange-50">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h5 class="font-semibold text-gray-900">Emily Wilson - Peer Reviews</h5>
+                                            <p class="text-gray-600 text-sm">Awaiting feedback from 3 peers - Due in 5 days</p>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button onclick="viewProgress('emily-peer')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                                View Progress
+                                            </button>
+                                            <button onclick="sendReminder('peers')" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                                                Remind Peers
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-red-200 rounded-lg p-4 bg-red-50">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h5 class="font-semibold text-gray-900">Alex Chen - Overdue Review</h5>
+                                            <p class="text-gray-600 text-sm">Q4 2023 Review - 3 days overdue</p>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button onclick="urgentReview('alex')" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                                                Urgent Review
+                                            </button>
+                                            <button onclick="escalate('alex')" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                                                Escalate
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Completed Reviews -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">Recently Completed (5)</h4>
+                            <div class="space-y-4">
+                                <div class="border border-green-200 rounded-lg p-4 bg-green-50">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h5 class="font-semibold text-gray-900">Lisa Wang - Performance Review</h5>
+                                            <p class="text-gray-600 text-sm">Completed on March 15, 2024 • Score: 4.4/5.0</p>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button onclick="viewReview('lisa')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                                View Review
+                                            </button>
+                                            <button onclick="scheduleDiscussion('lisa')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                                Schedule Discussion
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-green-200 rounded-lg p-4 bg-green-50">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h5 class="font-semibold text-gray-900">David Martinez - 360° Feedback</h5>
+                                            <p class="text-gray-600 text-sm">Completed on March 12, 2024 • Score: 4.0/5.0</p>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button onclick="viewReview('david')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                                View Review
+                                            </button>
+                                            <button onclick="createPlan('david')" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                                                Create Plan
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Development Plans Section -->
+            <div id="development-section" class="section-content hidden">
+                <div class="space-y-6">
+                    <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-semibold text-gray-900">Development Plans</h3>
+                            <button onclick="createNewPlan()" class="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors">
+                                <i class="fas fa-plus mr-2"></i>Create New Plan
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Active Plans -->
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-900 mb-4">Active Plans (6)</h4>
+                                <div class="space-y-4">
+                                    <div class="border border-teal-200 rounded-lg p-4 bg-teal-50">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <h5 class="font-semibold text-gray-900">Mike Johnson - Leadership Track</h5>
+                                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">On Track</span>
+                                        </div>
+                                        <p class="text-gray-600 text-sm mb-3">Preparing for senior leadership role</p>
+                                        <div class="mb-3">
+                                            <div class="flex items-center justify-between mb-1">
+                                                <span class="text-sm text-gray-600">Progress</span>
+                                                <span class="text-sm font-semibold text-teal-600">75%</span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                                <div class="bg-teal-600 h-2 rounded-full" style="width: 75%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button onclick="viewPlan('mike-leadership')" class="bg-teal-600 text-white px-3 py-1 rounded text-sm hover:bg-teal-700 transition-colors">
+                                                View Plan
+                                            </button>
+                                            <button onclick="updateProgress('mike-leadership')" class="bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-300 transition-colors">
+                                                Update
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="border border-blue-200 rounded-lg p-4 bg-blue-50">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <h5 class="font-semibold text-gray-900">Emily Wilson - UX Mastery</h5>
+                                            <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs">Behind</span>
+                                        </div>
+                                        <p class="text-gray-600 text-sm mb-3">Advanced UX design and research skills</p>
+                                        <div class="mb-3">
+                                            <div class="flex items-center justify-between mb-1">
+                                                <span class="text-sm text-gray-600">Progress</span>
+                                                <span class="text-sm font-semibold text-blue-600">45%</span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                                <div class="bg-blue-600 h-2 rounded-full" style="width: 45%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button onclick="viewPlan('emily-ux')" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors">
+                                                View Plan
+                                            </button>
+                                            <button onclick="adjustTimeline('emily-ux')" class="bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-300 transition-colors">
+                                                Adjust
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="border border-green-200 rounded-lg p-4 bg-green-50">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <h5 class="font-semibold text-gray-900">Lisa Wang - Communication Skills</h5>
+                                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Completed</span>
+                                        </div>
+                                        <p class="text-gray-600 text-sm mb-3">Public speaking and presentation skills</p>
+                                        <div class="mb-3">
+                                            <div class="flex items-center justify-between mb-1">
+                                                <span class="text-sm text-gray-600">Progress</span>
+                                                <span class="text-sm font-semibold text-green-600">100%</span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                                <div class="bg-green-600 h-2 rounded-full" style="width: 100%"></div>
+                                            </div>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button onclick="viewPlan('lisa-communication')" class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 transition-colors">
+                                                View Results
+                                            </button>
+                                            <button onclick="createNewPlan('lisa')" class="bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-300 transition-colors">
+                                                New Plan
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Plan Templates -->
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-900 mb-4">Plan Templates</h4>
+                                <div class="space-y-4">
+                                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer" onclick="useTemplate('leadership')">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h5 class="font-semibold text-gray-900">Leadership Development</h5>
+                                                <p class="text-gray-600 text-sm">6-month leadership track</p>
+                                                <div class="text-xs text-gray-500 mt-1">8 activities • 3 milestones</div>
+                                            </div>
+                                            <i class="fas fa-crown text-yellow-500 text-xl"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer" onclick="useTemplate('technical')">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h5 class="font-semibold text-gray-900">Technical Skills</h5>
+                                                <p class="text-gray-600 text-sm">Advanced technical training</p>
+                                                <div class="text-xs text-gray-500 mt-1">12 activities • 4 milestones</div>
+                                            </div>
+                                            <i class="fas fa-code text-blue-500 text-xl"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer" onclick="useTemplate('communication')">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h5 class="font-semibold text-gray-900">Communication Skills</h5>
+                                                <p class="text-gray-600 text-sm">Public speaking and writing</p>
+                                                <div class="text-xs text-gray-500 mt-1">6 activities • 2 milestones</div>
+                                            </div>
+                                            <i class="fas fa-microphone text-green-500 text-xl"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer" onclick="useTemplate('project-management')">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <h5 class="font-semibold text-gray-900">Project Management</h5>
+                                                <p class="text-gray-600 text-sm">PM methodologies and tools</p>
+                                                <div class="text-xs text-gray-500 mt-1">10 activities • 3 milestones</div>
+                                            </div>
+                                            <i class="fas fa-project-diagram text-purple-500 text-xl"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Analytics Section -->
+            <div id="analytics-section" class="section-content hidden">
+                <div class="space-y-6">
+                    <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-6">Team Performance Analytics</h3>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-900 mb-4">Team Performance Trend</h4>
+                                <div id="team-trend-chart" class="w-full h-64"></div>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-900 mb-4">Individual Contributions</h4>
+                                <div id="individual-chart" class="w-full h-64"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">Skills Matrix</h4>
+                            <div class="overflow-x-auto">
+                                <table class="w-full border border-gray-200 rounded-lg">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-900">Team Member</th>
+                                            <th class="text-center py-3 px-4 font-semibold text-gray-900">Communication</th>
+                                            <th class="text-center py-3 px-4 font-semibold text-gray-900">Leadership</th>
+                                            <th class="text-center py-3 px-4 font-semibold text-gray-900">Technical</th>
+                                            <th class="text-center py-3 px-4 font-semibold text-gray-900">Innovation</th>
+                                            <th class="text-center py-3 px-4 font-semibold text-gray-900">Teamwork</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b border-gray-100">
+                                            <td class="py-3 px-4 font-semibold text-gray-900">Mike Johnson</td>
+                                            <td class="py-3 px-4 text-center">
+                                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">4.3</span>
+                                            </td>
+                                            <td class="py-3 px-4 text-center">
+                                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">3.8</span>
+                                            </td>
+                                            <td class="py-3 px-4 text-center">
+                                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">4.7</span>
+                                            </td>
+                                            <td class="py-3 px-4 text-center">
+                                                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">3.9</span>
+                                            </td>
+                                            <td class="py-3 px-4 text-center">
+                                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">4.1</span>
+                                            </td>
+                                        </tr>
+                                        <tr class="border-b border-gray-100">
+                                            <td class="py-3 px-4 font-semibold text-gray-900">Emily Wilson</td>
+                                            <td class="py-3 px-4 text-center">
+                                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">4.5</span>
+                                            </td>
+                                            <td class="py-3 px-4 text-center">
+                                                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">3.5</span>
+                                            </td>
+                                            <td class="py-3 px-4 text-center">
+                                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">4.2</span>
+                                            </td>
+                                            <td class="py-3 px-4 text-center">
+                                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">4.3</span>
+                                            </td>
+                                            <td class="py-3 px-4 text-center">
+                                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">4.0</span>
+                                            </td>
+                                        </tr>
+                                        <tr class="border-b border-gray-100">
+                                            <td class="py-3 px-4 font-semibold text-gray-900">Alex Chen</td>
+                                            <td class="py-3 px-4 text-center">
+                                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">4.0</span>
+                                            </td>
+                                            <td class="py-3 px-4 text-center">
+                                                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">3.2</span>
+                                            </td>
+                                            <td class="py-3 px-4 text-center">
+                                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">4.4</span>
+                                            </td>
+                                            <td class="py-3 px-4 text-center">
+                                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">3.8</span>
+                                            </td>
+                                            <td class="py-3 px-4 text-center">
+                                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">3.9</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Section -->
+            <div id="calendar-section" class="section-content hidden">
+                <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-6">Team Calendar & Meetings</h3>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Calendar View -->
+                        <div class="lg:col-span-2">
+                            <div class="mb-4 flex items-center justify-between">
+                                <h4 class="text-lg font-semibold text-gray-900">March 2024</h4>
+                                <div class="flex space-x-2">
+                                    <button class="p-2 text-gray-600 hover:text-teal-600 transition-colors">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                    <button class="p-2 text-gray-600 hover:text-teal-600 transition-colors">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-7 gap-1 mb-2">
+                                <div class="p-2 text-center text-sm font-semibold text-gray-600">Sun</div>
+                                <div class="p-2 text-center text-sm font-semibold text-gray-600">Mon</div>
+                                <div class="p-2 text-center text-sm font-semibold text-gray-600">Tue</div>
+                                <div class="p-2 text-center text-sm font-semibold text-gray-600">Wed</div>
+                                <div class="p-2 text-center text-sm font-semibold text-gray-600">Thu</div>
+                                <div class="p-2 text-center text-sm font-semibold text-gray-600">Fri</div>
+                                <div class="p-2 text-center text-sm font-semibold text-gray-600">Sat</div>
+                            </div>
+                            
+                            <div class="grid grid-cols-7 gap-1">
+                                <!-- Calendar days -->
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">25</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">26</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">27</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">28</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">29</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">1</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">2</div>
+                                </div>
+                                
+                                <!-- Week 1 -->
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">3</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">4</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">5</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">6</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">7</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">8</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">9</div>
+                                </div>
+                                
+                                <!-- Week 2 -->
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">10</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">11</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">12</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">13</div>
+                                    <div class="text-xs bg-blue-100 text-blue-800 rounded p-1 mt-1">Team Meeting</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">14</div>
+                                    <div class="text-xs bg-green-100 text-green-800 rounded p-1 mt-1">1-on-1 Alex</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">15</div>
+                                    <div class="text-xs bg-purple-100 text-purple-800 rounded p-1 mt-1">Review Deadline</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">16</div>
+                                </div>
+                                
+                                <!-- Current week -->
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer bg-blue-50">
+                                    <div class="text-sm text-gray-900 font-semibold">17</div>
+                                    <div class="text-xs bg-teal-100 text-teal-800 rounded p-1 mt-1">1-on-1 Mike</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">18</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">19</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">20</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">21</div>
+                                    <div class="text-xs bg-orange-100 text-orange-800 rounded p-1 mt-1">1-on-1 Emily</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">22</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">23</div>
+                                </div>
+                                
+                                <!-- Next week -->
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">24</div>
+                                    <div class="text-xs bg-red-100 text-red-800 rounded p-1 mt-1">1-on-1 David</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">25</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">26</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">27</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">28</div>
+                                    <div class="text-xs bg-purple-100 text-purple-800 rounded p-1 mt-1">1-on-1 Lisa</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">29</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">30</div>
+                                </div>
+                                
+                                <!-- Final days -->
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-900">31</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">1</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">2</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">3</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">4</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">5</div>
+                                </div>
+                                <div class="p-2 h-20 border border-gray-200 hover:bg-gray-50 cursor-pointer">
+                                    <div class="text-sm text-gray-400">6</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Upcoming Meetings -->
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">Upcoming Meetings</h4>
+                            <div class="space-y-3">
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h5 class="font-semibold text-gray-900">1-on-1 with Mike Johnson</h5>
+                                            <p class="text-gray-600 text-sm">Performance review discussion</p>
+                                            <p class="text-gray-500 text-xs">Today, 2:00 PM - 2:30 PM</p>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button onclick="rescheduleMeeting('mike')" class="text-blue-600 hover:text-blue-800">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button onclick="cancelMeeting('mike')" class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h5 class="font-semibold text-gray-900">Team Standup</h5>
+                                            <p class="text-gray-600 text-sm">Weekly team synchronization</p>
+                                            <p class="text-gray-500 text-xs">Tomorrow, 9:00 AM - 9:30 AM</p>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button onclick="editMeeting('standup')" class="text-blue-600 hover:text-blue-800">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button onclick="cancelMeeting('standup')" class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h5 class="font-semibold text-gray-900">1-on-1 with Emily Wilson</h5>
+                                            <p class="text-gray-600 text-sm">UX project feedback session</p>
+                                            <p class="text-gray-500 text-xs">March 21, 3:00 PM - 3:45 PM</p>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <button onclick="rescheduleMeeting('emily')" class="text-blue-600 hover:text-blue-800">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button onclick="cancelMeeting('emily')" class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Navigation and section management
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionName + '-section').classList.remove('hidden');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.nav-item').classList.add('active');
+            
+            // Update page title
+            const titles = {
+                'dashboard': ['Manager Dashboard', 'Team insights and management tools'],
+                'team': ['My Team', 'Manage your team members and their progress'],
+                'feedback': ['Feedback Reviews', 'Review and manage feedback submissions'],
+                'development': ['Development Plans', 'Track employee development and growth'],
+                'analytics': ['Team Analytics', 'Analyze team performance and trends'],
+                'calendar': ['Calendar & Meetings', 'Schedule and manage team meetings']
+            };
+            
+            if (titles[sectionName]) {
+                document.getElementById('page-title').textContent = titles[sectionName][0];
+                document.getElementById('page-subtitle').textContent = titles[sectionName][1];
+            }
+        }
+
+        // Initialize charts
+        function initializeCharts() {
+            // Performance Distribution Chart
+            const performanceData = [{
+                values: [2, 3, 2, 1],
+                labels: ['Excellent (4.5-5.0)', 'Good (4.0-4.4)', 'Average (3.5-3.9)', 'Below Average (3.0-3.4)'],
+                type: 'pie',
+                marker: {
+                    colors: ['#059669', '#0891B2', '#D97706', '#DC2626']
+                }
+            }];
+            
+            Plotly.newPlot('performance-distribution-chart', performanceData, {
+                title: '',
+                margin: { t: 20, r: 20, b: 20, l: 20 }
+            }, { displayModeBar: false, responsive: true });
+
+            // Skills Radar Chart
+            const skillsData = [{
+                r: [4.2, 3.6, 4.1, 3.9, 4.3],
+                theta: ['Communication', 'Leadership', 'Technical Skills', 'Innovation', 'Teamwork'],
+                type: 'scatterpolar',
+                fill: 'toself',
+                marker: { color: '#0891B2' },
+                line: { color: '#0891B2' },
+                name: 'Team Average'
+            }, {
+                r: [4.5, 4.0, 4.7, 4.2, 4.1],
+                theta: ['Communication', 'Leadership', 'Technical Skills', 'Innovation', 'Teamwork'],
+                type: 'scatterpolar',
+                fill: 'toself',
+                marker: { color: '#2563EB' },
+                line: { color: '#2563EB' },
+                name: 'Target'
+            }];
+            
+            Plotly.newPlot('skills-radar-chart', skillsData, {
+                polar: {
+                    radialaxis: {
+                        visible: true,
+                        range: [0, 5]
+                    }
+                },
+                margin: { t: 20, r: 20, b: 20, l: 20 }
+            }, { displayModeBar: false, responsive: true });
+
+            // Team Trend Chart
+            const teamTrendData = [{
+                x: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                y: [3.8, 4.0, 4.1, 4.2, 4.3, 4.2],
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: { color: '#0891B2', width: 3 },
+                marker: { color: '#0891B2', size: 8 },
+                name: 'Team Average'
+            }];
+            
+            Plotly.newPlot('team-trend-chart', teamTrendData, {
+                title: '',
+                xaxis: { title: 'Month' },
+                yaxis: { title: 'Performance Score' },
+                margin: { t: 20, r: 20, b: 40, l: 40 }
+            }, { displayModeBar: false, responsive: true });
+
+            // Individual Chart
+            const individualData = [{
+                x: ['Mike J.', 'Emily W.', 'Alex C.', 'Lisa W.', 'David M.', 'Rachel K.'],
+                y: [4.3, 4.1, 3.9, 4.4, 4.0, 4.2],
+                type: 'bar',
+                marker: { color: '#0891B2' }
+            }];
+            
+            Plotly.newPlot('individual-chart', individualData, {
+                title: '',
+                xaxis: { title: 'Team Members' },
+                yaxis: { title: 'Current Score' },
+                margin: { t: 20, r: 20, b: 40, l: 40 }
+            }, { displayModeBar: false, responsive: true });
+        }
+
+        // Quick action functions
+        function requestFeedback() {
+            alert('Request Feedback functionality would open a form to request feedback for a team member.');
+        }
+
+        function scheduleCheckIn() {
+            alert('Schedule Check-in functionality would open a calendar to book 1-on-1 meetings.');
+        }
+
+        function createDevPlan() {
+            alert('Create Development Plan functionality would open a wizard to create a new development plan.');
+        }
+
+        // Team management functions
+        function addTeamMember() {
+            alert('Add Team Member functionality would open a form to add a new member to your team.');
+        }
+
+        function viewProfile(memberId) {
+            alert(`View profile for ${memberId} would show detailed employee information and history.`);
+        }
+
+        function scheduleMeeting(memberId) {
+            alert(`Schedule meeting with ${memberId} would open a calendar booking interface.`);
+        }
+
+        // Feedback functions
+        function startReview(reviewId) {
+            alert(`Start review for ${reviewId} would open the feedback review interface.`);
+        }
+
+        function remindEmployee(employeeId) {
+            alert(`Send reminder to ${employeeId} would send a notification about pending feedback.`);
+        }
+
+        function viewProgress(progressId) {
+            alert(`View progress for ${progressId} would show detailed progress information.`);
+        }
+
+        function sendReminder(type) {
+            alert(`Send reminder to ${type} would initiate reminder workflows.`);
+        }
+
+        function urgentReview(employeeId) {
+            alert(`Urgent review for ${employeeId} would escalate the review process.`);
+        }
+
+        function escalate(employeeId) {
+            alert(`Escalate for ${employeeId} would notify higher management.`);
+        }
+
+        function viewReview(employeeId) {
+            alert(`View review for ${employeeId} would show completed feedback details.`);
+        }
+
+        function scheduleDiscussion(employeeId) {
+            alert(`Schedule discussion with ${employeeId} would book a meeting to discuss feedback.`);
+        }
+
+        function createPlan(employeeId) {
+            alert(`Create plan for ${employeeId} would open development plan creation.`);
+        }
+
+        // Development plan functions
+        function createNewPlan() {
+            alert('Create New Plan functionality would open a wizard to create a development plan.');
+        }
+
+        function viewPlan(planId) {
+            alert(`View plan ${planId} would show detailed development plan information.`);
+        }
+
+        function updateProgress(planId) {
+            alert(`Update progress for ${planId} would allow updating development plan progress.`);
+        }
+
+        function adjustTimeline(planId) {
+            alert(`Adjust timeline for ${planId} would modify development plan schedule.`);
+        }
+
+        function useTemplate(templateType) {
+            alert(`Use ${templateType} template would create a development plan based on the selected template.`);
+        }
+
+        // Calendar functions
+        function rescheduleMeeting(employeeId) {
+            alert(`Reschedule meeting with ${employeeId} would open calendar to select new time.`);
+        }
+
+        function cancelMeeting(employeeId) {
+            if (confirm(`Are you sure you want to cancel the meeting with ${employeeId}?`)) {
+                alert('Meeting cancelled successfully.');
+            }
+        }
+
+        function editMeeting(meetingId) {
+            alert(`Edit meeting ${meetingId} would open meeting details for modification.`);
+        }
+
+        // Utility functions
+        function logout() {
+            localStorage.removeItem('demoRole');
+            window.location.href = 'demo-login.html';
+        }
+
+        function showNotifications() {
+            alert('Notifications panel would show manager-specific notifications and alerts.');
+        }
+
+        function showHelp() {
+            alert('Help panel would show contextual help for managers.');
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if user is logged in
+            const demoRole = localStorage.getItem('demoRole');
+            if (!demoRole || demoRole !== 'manager') {
+                window.location.href = 'demo-login.html';
+                return;
+            }
+            
+            // Initialize charts
+            setTimeout(initializeCharts, 500);
+        });
+    </script>
+</body>
+</html>
